@@ -2,8 +2,8 @@ plugins {
   id 'java'
 }
 
-group = 'com.ilway.skystat'
-version = 'unspecified'
+group = 'com.skystat.taf.consumer'
+version = '1.0.0'
 
 repositories {
   mavenCentral()

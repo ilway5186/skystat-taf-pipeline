@@ -1,9 +1,13 @@
 plugins {
-  id 'java'
+  id 'java-library'
 }
 
-group = 'com.ilway.skystat'
-version = '1.0-SNAPSHOT'
+group = 'com.skystat.taf.domain'
+version = '1.0.0'
+
+jar {
+  enabled = true
+}
 
 repositories {
   mavenCentral()

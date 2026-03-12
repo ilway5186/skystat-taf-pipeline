@@ -13,14 +13,14 @@
 본 프로젝트는 **Spring Boot 멀티 모듈**로 진행되며, 핵심 비즈니스 로직(도메인)과 인프라(Kafka, 외부 API)를 격리했습니다.
 
 ### 2.1 모듈 구성 (Multi-Module)
-- **`domain` (`com.ilways.skystat.domain`)**
+- **`domain` (`com.skystat.taf.domain`)**
     - 시스템의 핵심 비즈니스 로직을 담당합니다.
     - 외부 프레임워크(Spring, Kafka) 의존성 없이 순수한 언어 레벨로 작성되었습니다.
     - 복잡한 TAF 텍스트(BECMG, TEMPO 등) 파싱 룰과 위험 기상(Windshear, 저시정 등) 판단 조건을 관리합니다.
-- **`services/taf-producer-service` (`com.ilways.skystat.producer`)**
+- **`services/taf-producer-service` (`com.skystat.taf.producer`)**
     - **역할:** 외부 기상청 API를 스케줄링하여 최신 TAF 데이터를 수집합니다.
     - **특징:** 수집된 데이터를 가공 없이 Kafka Topic(`taf-data-topic`)으로 발행(Publish)하며, 이후의 데이터 소비 과정에 관여하지 않습니다.
-- **`services/taf-alarm-service` (`com.ilways.skystat.consumer`)**
+- **`services/taf-alarm-service` (`com.skystat.taf.consumer`)**
     - **역할:** Kafka Topic을 구독(Subscribe)하여 실시간 스트리밍되는 TAF 데이터를 수신합니다.
     - **특징:** `domain` 모듈의 파서를 호출하여 데이터를 분석하고, 위험 기상 조건이 충족되면 외부(Slack, Email 등)로 즉시 알림을 발송합니다.
 
