@@ -6,6 +6,8 @@ public enum LengthUnit implements Unit {
   FT(0.3048),
   SM(1609.344);
 
+  public static final LengthUnit STANDARD_UNIT = METER;
+
   private final double toStandardUnitFactor;
 
   LengthUnit(double toStandardUnitFactor) {

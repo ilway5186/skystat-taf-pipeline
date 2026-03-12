@@ -5,6 +5,8 @@ public enum PressureUnit implements Unit {
   HPA(1.0),
   INHG(33.86388666666667);
 
+  public static final PressureUnit STANDARD_UNIT = HPA;
+
   private final double toStandardUnitFactor;
 
   PressureUnit(double toStandardUnitFactor) {

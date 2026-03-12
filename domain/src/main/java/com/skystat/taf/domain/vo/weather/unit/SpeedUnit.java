@@ -5,6 +5,8 @@ public enum SpeedUnit implements Unit {
   MPS(1.0),
   KT(1852.0 / 3600.0);
 
+  public static final SpeedUnit STANDARD_UNIT = MPS;
+
   private final double toStandardUnitFactor;
 
   SpeedUnit(double toStandardUnitFactor) {

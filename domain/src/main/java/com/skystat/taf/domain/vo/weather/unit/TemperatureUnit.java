@@ -5,6 +5,8 @@ public enum TemperatureUnit implements Unit {
   CELSIUS(1.0, "C"),
   FAHRENHEIT(5.0 / 9.0, "F");
 
+  public static final TemperatureUnit STANDARD_UNIT = CELSIUS;
+
   private final double toStandardUnitFactor;
   private final String symbol;
 
@@ -13,7 +15,7 @@ public enum TemperatureUnit implements Unit {
     this.symbol = symbol;
   }
 
-  public String getSymbol() {
+  public String symbol() {
     return symbol;
   }
 
