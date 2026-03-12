@@ -1,4 +1,4 @@
-package com.skystat.taf.domain.vo.weather.elements;
+package com.skystat.taf.domain.vo.weather.elements.temperature;
 
 import com.skystat.taf.domain.vo.weather.unit.TemperatureUnit;
 

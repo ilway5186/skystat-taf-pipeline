@@ -5,14 +5,14 @@ import com.skystat.taf.domain.vo.weather.elements.WeatherCode;
 public enum CloudCoverage implements WeatherCode {
 
   FEW("FEW","Few"),
-  SCT("SCT","Scattered"),
-  BKN("BKN","Broken"),
-  OVC("OVC","Overcast"),
-  VV("VV","Vertical visibility"),
-  SKC("SKC","Sky clear"),
-  CLR("CLR","Clear"),
-  NSC("NSC","No significant cloud"),
-  NCD("NCD","No cloud detected");
+  SCATTERED("SCT","Scattered"),
+  BROKEN("BKN","Broken"),
+  OVERCAST("OVC","Overcast"),
+  VERTICAL_VISIBILITY("VV","Vertical visibility"),
+  SKY_CLEAR("SKC","Sky clear"),
+  CLEAR("CLR","Clear"),
+  NO_SIGNIFICANT_CLOUD("NSC","No significant cloud"),
+  NO_CLOUD_DETECTED("NCD","No cloud detected");
 
   private final String symbol;
   private final String description;
@@ -24,7 +24,7 @@ public enum CloudCoverage implements WeatherCode {
 
   public boolean requiresAltitude() {
     return switch (this) {
-      case FEW, SCT, BKN, OVC, VV -> true;
+      case FEW, SCATTERED, BROKEN, OVERCAST, VERTICAL_VISIBILITY -> true;
       default -> false;
     };
   }

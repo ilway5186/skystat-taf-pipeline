@@ -6,6 +6,8 @@ import java.util.Objects;
 
 public record Visibility(double value, LengthUnit unit) {
 
+	public static final double MAX_VISIBILITY_METER = 10000.0;
+
 	public Visibility {
 		Objects.requireNonNull(unit, "Visibility unit cannot be null.");
 
@@ -15,11 +17,11 @@ public record Visibility(double value, LengthUnit unit) {
 	}
 
 	public static Visibility p6sm() {
-		return new Visibility(6.0, LengthUnit.SM);
+		return new Visibility(MAX_VISIBILITY_METER, LengthUnit.METER);
 	}
 
 	public static Visibility cavok() {
-		return new Visibility(10000.0, LengthUnit.METER);
+		return new Visibility(MAX_VISIBILITY_METER, LengthUnit.METER);
 	}
 
 }

@@ -3,6 +3,7 @@ package com.skystat.taf.domain.vo.weather.elements.phenomena;
 import com.skystat.taf.domain.vo.weather.elements.WeatherCode;
 
 public enum WeatherIntensity implements WeatherCode {
+
   LIGHT("-", "Light"),
   MODERATE("",  "Moderate"),
   HEAVY("+",  "Heavy");

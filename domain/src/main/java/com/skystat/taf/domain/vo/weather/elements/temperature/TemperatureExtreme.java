@@ -1,16 +1,16 @@
-package com.skystat.taf.domain.vo.weather.elements.wind;
+package com.skystat.taf.domain.vo.weather.elements.temperature;
 
 import com.skystat.taf.domain.vo.weather.elements.WeatherCode;
 
-public enum WindDirectionType implements WeatherCode {
+public enum TemperatureExtreme implements WeatherCode {
 
-  FIXED("FIX", "fixed"),
-  VARIABLE("VRB", "variable");
+  MAXIMUM("TX", "Maximum Temperature"),
+  MINIMUM("TN", "Minimum Temperature");
 
   private final String symbol;
   private final String description;
 
-  WindDirectionType(String symbol, String description) {
+  TemperatureExtreme(String symbol, String description) {
     this.symbol = symbol;
     this.description = description;
   }
@@ -24,5 +24,7 @@ public enum WindDirectionType implements WeatherCode {
   public String description() {
     return description;
   }
+
+
 
 }

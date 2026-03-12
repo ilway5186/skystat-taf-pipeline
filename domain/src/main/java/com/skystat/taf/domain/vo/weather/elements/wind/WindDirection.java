@@ -7,11 +7,11 @@ public record WindDirection(WindDirectionType type, Double degree) {
 	public WindDirection {
 		Objects.requireNonNull(type, "WindDirectionType cannot be null.");
 
-		if (type == WindDirectionType.FIX && degree == null) {
+		if (type == WindDirectionType.FIXED && degree == null) {
 			throw new IllegalArgumentException("Fixed wind direction requires a specific degree");
 		}
 
-		if (type == WindDirectionType.VRB && degree != null) {
+		if (type == WindDirectionType.VARIABLE && degree != null) {
 			throw new IllegalArgumentException("Variable Wind cannot have a degree");
 		}
 
@@ -21,11 +21,11 @@ public record WindDirection(WindDirectionType type, Double degree) {
 	}
 
 	public static WindDirection fixed(Double degree) {
-		return new WindDirection(WindDirectionType.FIX, degree);
+		return new WindDirection(WindDirectionType.FIXED, degree);
 	}
 
 	public static WindDirection variable() {
-		return new WindDirection(WindDirectionType.VRB, null);
+		return new WindDirection(WindDirectionType.VARIABLE, null);
 	}
 
 }

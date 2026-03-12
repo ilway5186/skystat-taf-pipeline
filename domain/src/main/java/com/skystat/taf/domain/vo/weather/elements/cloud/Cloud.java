@@ -18,7 +18,7 @@ public record Cloud(
 
 		// VV타입은 유일하게 altitude 값에 null을 허용함
 		//  - 규정상 필수이나, 현실적으로 관측이 어려운 경우가 빈번하여 null인 경우 다수 발생
-		if (coverage != CloudCoverage.VV && coverage.requiresAltitude() && altitude == null) {
+		if (coverage != CloudCoverage.VERTICAL_VISIBILITY && coverage.requiresAltitude() && altitude == null) {
 			throw new IllegalArgumentException(coverage + " requires altitude (e.g., BKN030, VV002).");
 		}
 

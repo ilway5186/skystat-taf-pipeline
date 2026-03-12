@@ -4,8 +4,8 @@ import com.skystat.taf.domain.vo.weather.elements.WeatherCode;
 
 public enum CloudType implements WeatherCode {
 
-  TCU("TCU","Towering Cumulus"),
-  CB("CB","Cumulonimbus"),
+  TOWERING_CUMULUS("TCU","Towering Cumulus"),
+  CUMULONIMBUS("CB","Cumulonimbus"),
   NONE("","None");
 
   private final String symbol;

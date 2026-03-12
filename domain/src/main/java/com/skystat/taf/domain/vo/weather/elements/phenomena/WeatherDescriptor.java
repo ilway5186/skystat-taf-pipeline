@@ -4,16 +4,16 @@ import com.skystat.taf.domain.vo.weather.elements.WeatherCode;
 
 public enum WeatherDescriptor implements WeatherCode {
 
-  BC("BC","Patches"),
-  BL("BL","Blowing"),
-  DR("DR","Drifting"),
-  DL("DL","Distant lightning"),
-  FZ("FZ","Freezing"),
-  MI("MI","Shallow"),
-  PR("PR","Partial"),
-  SH("SH","Showers"),
-  TS("TS","Thunderstorm"),
-  VC("VC","in the Vicinity");
+  PATCHES("BC","Patches"),
+  BLOWING("BL","Blowing"),
+  DRIFTING("DR","Drifting"),
+  DISTANT_LIGHTNING("DL","Distant lightning"),
+  FREEZING("FZ","Freezing"),
+  SHALLOW("MI","Shallow"),
+  PARTIAL("PR","Partial"),
+  SHOWERS("SH","Showers"),
+  THUNDERSTORM("TS","Thunderstorm"),
+  VICINITY("VC","in the Vicinity");
 
   private final String symbol;
   private final String description;
