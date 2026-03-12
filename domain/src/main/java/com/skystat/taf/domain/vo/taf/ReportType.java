@@ -3,11 +3,11 @@ package com.skystat.taf.domain.vo.taf;
 import java.util.Arrays;
 
 public enum ReportType {
-  ROUTINE,
+  ROUTINE,  // 정시 예보
   AMD,
   COR,
   CNL,
-  NIL;
+  NIL;    // 예보 없음
 
   public static ReportType from(String token) {
     if (token == null || token.isBlank() || token.equals("TAF")) {
