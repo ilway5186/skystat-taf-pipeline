@@ -1,0 +1,5 @@
+rootProject.name = 'skystat-taf-pipeline'
+
+include 'domain'
+include 'services:taf-producer-service'
+include 'services:taf-alarm-service'
