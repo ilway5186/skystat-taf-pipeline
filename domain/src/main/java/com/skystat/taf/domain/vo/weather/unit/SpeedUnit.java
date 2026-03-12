@@ -3,7 +3,7 @@ package com.skystat.taf.domain.vo.weather.unit;
 public enum SpeedUnit implements Unit {
 
   MPS(1.0),
-  KT(0.51444);
+  KT(1852.0 / 3600.0);
 
   private final double toStandardUnitFactor;
 

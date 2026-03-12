@@ -3,7 +3,7 @@ package com.skystat.taf.domain.vo.weather.unit;
 public enum PressureUnit implements Unit {
 
   HPA(1.0),
-  INHG(33.8639);
+  INHG(33.86388666666667);
 
   private final double toStandardUnitFactor;
 
