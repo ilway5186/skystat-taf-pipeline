@@ -17,16 +17,6 @@
           </set>
         </option>
       </GradleProjectSettings>
-      <GradleProjectSettings>
-        <option name="distributionType" value="LOCAL" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$/services/taf-ingestion-service" />
-        <option name="gradleHome" value="$PROJECT_DIR$/../../../../../../gradle-9.3.1" />
-        <option name="modules">
-          <set>
-            <option value="$PROJECT_DIR$/services/taf-ingestion-service" />
-          </set>
-        </option>
-      </GradleProjectSettings>
     </option>
   </component>
 </project>
