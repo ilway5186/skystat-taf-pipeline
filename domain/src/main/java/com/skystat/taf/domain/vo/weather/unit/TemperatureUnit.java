@@ -20,7 +20,7 @@ public enum TemperatureUnit implements Unit {
   }
 
   @Override
-  public double toStandardUnit(double value) {
+  public double toStandardUnitValue(double value) {
     if (this == FAHRENHEIT) {
       return (value - 32.0) * toStandardUnitFactor;
     }
@@ -29,7 +29,7 @@ public enum TemperatureUnit implements Unit {
   }
 
   @Override
-  public double fromStandardUnit(double value) {
+  public double fromStandardUnitValue(double value) {
     if (this == FAHRENHEIT) {
       return (value / toStandardUnitFactor) + 32.0;
     }

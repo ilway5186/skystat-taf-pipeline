@@ -7,6 +7,7 @@ public enum ChangeIndicator {
   BECMG,
   FM,
   TEMPO,
+  INTER,
   PROB30,
   PROB40,
   PROB30_TEMPO,

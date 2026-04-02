@@ -1,10 +1,10 @@
 package com.skystat.taf.domain.vo.taf;
 
-import com.skystat.taf.domain.vo.weather.elements.Visibility;
-import com.skystat.taf.domain.vo.weather.elements.cloud.Cloud;
-import com.skystat.taf.domain.vo.weather.elements.phenomena.Weather;
+import com.skystat.taf.domain.vo.weather.field.Visibility;
+import com.skystat.taf.domain.vo.weather.field.cloud.Cloud;
+import com.skystat.taf.domain.vo.weather.field.phenomena.Weather;
 import com.skystat.taf.domain.vo.weather.unit.LengthUnit;
-import com.skystat.taf.domain.vo.weather.elements.wind.Wind;
+import com.skystat.taf.domain.vo.weather.field.wind.Wind;
 
 import java.util.List;
 import java.util.Objects;

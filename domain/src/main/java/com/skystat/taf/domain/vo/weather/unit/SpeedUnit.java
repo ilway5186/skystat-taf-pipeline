@@ -14,12 +14,12 @@ public enum SpeedUnit implements Unit {
   }
 
   @Override
-  public double toStandardUnit(double value) {
+  public double toStandardUnitValue(double value) {
     return value * toStandardUnitFactor;
   }
 
   @Override
-  public double fromStandardUnit(double value) {
+  public double fromStandardUnitValue(double value) {
     return value / toStandardUnitFactor;
   }
 

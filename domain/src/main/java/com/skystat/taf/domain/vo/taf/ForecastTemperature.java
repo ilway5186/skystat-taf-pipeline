@@ -1,7 +1,7 @@
 package com.skystat.taf.domain.vo.taf;
 
-import com.skystat.taf.domain.vo.weather.elements.temperature.Temperature;
-import com.skystat.taf.domain.vo.weather.elements.temperature.TemperatureExtreme;
+import com.skystat.taf.domain.vo.weather.field.temperature.Temperature;
+import com.skystat.taf.domain.vo.weather.field.temperature.TemperatureExtreme;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
