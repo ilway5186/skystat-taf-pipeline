@@ -1,13 +1,13 @@
 package com.skystat.taf.domain.vo.taf;
 
 import com.skystat.taf.domain.vo.weather.field.temperature.Temperature;
-import com.skystat.taf.domain.vo.weather.field.temperature.TemperatureExtreme;
+import com.skystat.taf.domain.vo.weather.field.temperature.TemperatureExtremeType;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public record ForecastTemperature(
-  TemperatureExtreme type,
+  TemperatureExtremeType type,
   Temperature temperature,
   ZonedDateTime time
 ) {
