@@ -10,7 +10,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/services" />
             <option value="$PROJECT_DIR$/services/taf-alarm-service" />
             <option value="$PROJECT_DIR$/services/taf-ingestion-service" />

@@ -2,7 +2,7 @@ plugins {
   id 'java'
 }
 
-group = 'com.skystat.taf.consumer'
+group = 'com.skystat.core.consumer'
 version = '1.0.0'
 
 repositories {

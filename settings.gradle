@@ -1,5 +1,5 @@
 rootProject.name = 'skystat-taf-pipeline'
 
-include 'domain'
+include 'core'
 include 'services:taf-ingestion-service'
 include 'services:taf-alarm-service'
