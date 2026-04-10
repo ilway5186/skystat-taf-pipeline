@@ -1,7 +1,8 @@
 package com.skystat.core.domain.service.parser.regex.forecast;
 
+import com.skystat.core.domain.service.parser.FieldParser;
 import com.skystat.core.domain.vo.taf.ChangeIndicator;
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
 import com.skystat.core.exception.ErrorCode;
 import com.skystat.core.exception.ParsingException;
 
@@ -9,7 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-public class ChangeIndicatorParser extends RegexFieldParser<List<ChangeIndicatorParser.ChangeIndicatorMatch>> {
+import static com.skystat.core.domain.service.parser.regex.forecast.ChangeIndicatorParser.*;
+
+public class ChangeIndicatorParser extends RegexParsingSupport implements FieldParser<List<ChangeIndicatorMatch>> {
 
   @Override
   public List<ChangeIndicatorMatch> parse(String reportText) {

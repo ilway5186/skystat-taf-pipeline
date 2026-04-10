@@ -1,11 +1,9 @@
 package com.skystat.core.domain.service.parser.regex.core;
 
-import com.skystat.core.domain.service.parser.FieldParser;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class RegexFieldParser<T> implements FieldParser<T> {
+public class RegexParsingSupport {
 
   protected Matcher matcher(String reportText, String regex) {
     Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE);

@@ -1,15 +1,16 @@
 package com.skystat.core.domain.service.parser.regex.forecast;
 
+import com.skystat.core.domain.service.parser.FieldParser;
 import com.skystat.core.domain.vo.weather.field.wind.Wind;
 import com.skystat.core.domain.vo.weather.field.wind.WindDirection;
 import com.skystat.core.domain.vo.weather.field.wind.WindDirectionType;
 import com.skystat.core.domain.vo.weather.unit.SpeedUnit;
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-public class WindParser extends RegexFieldParser<Optional<Wind>> {
+public class WindParser extends RegexParsingSupport implements FieldParser<Optional<Wind>> {
 
   @Override
   public Optional<Wind> parse(String reportText) {

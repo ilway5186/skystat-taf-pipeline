@@ -14,6 +14,7 @@ import com.skystat.core.domain.service.parser.regex.header.StationIcaoParser;
 import org.junit.jupiter.api.Test;
 
 import static com.skystat.core.domain.service.parser.ParserFixtures.FULL_REPORT;
+import static com.skystat.core.domain.service.parser.ParserFixtures.TEST_REFERENCE_INSTANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -35,7 +36,7 @@ class TafRegexParserTest {
 
   @Test
   void 전문을_Taf_엔티티로_파싱한다() {
-    Taf taf = parser.parse(FULL_REPORT);
+    Taf taf = parser.parse(FULL_REPORT, TEST_REFERENCE_INSTANT);
 
     assertNotNull(taf);
     assertEquals(6, taf.body().size());

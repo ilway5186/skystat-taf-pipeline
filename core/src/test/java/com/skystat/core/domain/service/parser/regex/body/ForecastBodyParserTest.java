@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static com.skystat.core.domain.service.parser.ParserFixtures.FULL_REPORT;
+import static com.skystat.core.domain.service.parser.ParserFixtures.TEST_REFERENCE_INSTANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ForecastBodyParserTest {
@@ -28,7 +29,7 @@ class ForecastBodyParserTest {
 
   @Test
   void 전체_전문을_forecast_body_목록으로_파싱한다() {
-    List<ForecastBody> bodies = parser.parse(FULL_REPORT);
+    List<ForecastBody> bodies = parser.parse(FULL_REPORT, TEST_REFERENCE_INSTANT);
 
     assertEquals(
       List.of(ChangeIndicator.HEADER, ChangeIndicator.TEMPO, ChangeIndicator.BECMG, ChangeIndicator.TEMPO, ChangeIndicator.BECMG, ChangeIndicator.BECMG),
@@ -44,7 +45,7 @@ BECMG 0909/0911 19008KT 2000 BR SCT005 BKN010 OVC030
 TEMPO 0914/0918 0800
 """;
 
-    List<ForecastBody> bodies = parser.parse(reportText);
+    List<ForecastBody> bodies = parser.parse(reportText, TEST_REFERENCE_INSTANT);
 
     assertEquals(bodies.get(1).wind(), bodies.get(2).wind());
     assertEquals(bodies.get(1).weathers(), bodies.get(2).weathers());
@@ -60,7 +61,7 @@ FM092100 25015KT 9999 NSW SCT030
 TEMPO 0921/0923 4000 SHRA
 """;
 
-    List<ForecastBody> bodies = parser.parse(reportText);
+    List<ForecastBody> bodies = parser.parse(reportText, TEST_REFERENCE_INSTANT);
 
     assertEquals(bodies.get(2).wind(), bodies.get(3).wind());
     assertEquals(bodies.get(2).clouds(), bodies.get(3).clouds());

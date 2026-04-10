@@ -1,12 +1,13 @@
 package com.skystat.core.domain.service.parser.regex.header;
 
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
+import com.skystat.core.domain.service.parser.FieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
 
 import com.skystat.core.domain.vo.taf.ReportType;
 
 import java.util.regex.Matcher;
 
-public class ReportTypeParser extends RegexFieldParser<ReportType> {
+public class ReportTypeParser extends RegexParsingSupport implements FieldParser<ReportType> {
 
   @Override
   public ReportType parse(String reportText) {

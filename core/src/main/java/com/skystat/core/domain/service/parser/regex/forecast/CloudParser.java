@@ -1,6 +1,7 @@
 package com.skystat.core.domain.service.parser.regex.forecast;
 
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
+import com.skystat.core.domain.service.parser.FieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
 import com.skystat.core.domain.vo.weather.field.cloud.Cloud;
 import com.skystat.core.domain.vo.weather.field.cloud.CloudCoverage;
 import com.skystat.core.domain.vo.weather.field.cloud.CloudType;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-public class CloudParser extends RegexFieldParser<List<Cloud>> {
+public class CloudParser extends RegexParsingSupport implements FieldParser<List<Cloud>> {
 
   @Override
   public List<Cloud> parse(String reportText) {

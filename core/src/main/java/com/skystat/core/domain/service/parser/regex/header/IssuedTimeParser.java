@@ -1,31 +1,18 @@
 package com.skystat.core.domain.service.parser.regex.header;
 
 import com.skystat.core.exception.ErrorCode;
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
-
-import com.skystat.core.domain.vo.weather.field.IssuedTime;import com.skystat.core.exception.ParsingException;
+import com.skystat.core.domain.service.parser.TemporalFieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
+import com.skystat.core.domain.vo.weather.field.IssuedTime;
+import com.skystat.core.exception.ParsingException;
 
 import java.time.*;
 import java.util.regex.Matcher;
 
-public class IssuedTimeParser extends RegexFieldParser<IssuedTime> {
-
-  private final YearMonth yearMonth;
-
-  public IssuedTimeParser() {
-    this.yearMonth = null;
-  }
-
-  private IssuedTimeParser(YearMonth yearMonth) {
-    this.yearMonth = yearMonth;
-  }
-
-  public static IssuedTimeParser withYearMonth(YearMonth yearMonth) {
-    return new IssuedTimeParser(yearMonth);
-  }
+public class IssuedTimeParser extends RegexParsingSupport implements TemporalFieldParser<IssuedTime> {
 
   @Override
-  public IssuedTime parse(String reportText) {
+  public IssuedTime parse(String reportText, Instant referenceInstant) {
     Matcher matcher = matcher(reportText, IssuedTimeRegex.regex());
 
     if (!matcher.find()) {
@@ -35,7 +22,7 @@ public class IssuedTimeParser extends RegexFieldParser<IssuedTime> {
     int parsedDay = parseDay(matcher);
     int parsedHour = parseLocalTime(matcher).getHour();
     int parsedMinute = parseLocalTime(matcher).getMinute();
-    YearMonth paredYearMonth = parseYearMonth(parsedDay);
+    YearMonth paredYearMonth = parseYearMonth(parsedDay, referenceInstant);
 
     Instant issuedTime = ZonedDateTime.of(
       LocalDateTime.of(paredYearMonth.getYear(), paredYearMonth.getMonthValue(), parsedDay, parsedHour, parsedMinute),
@@ -55,11 +42,10 @@ public class IssuedTimeParser extends RegexFieldParser<IssuedTime> {
     return LocalTime.of(hour, minute);
   }
 
-  private YearMonth parseYearMonth(int parsedDay) {
-    if (yearMonth != null) return yearMonth;
-
-    YearMonth currentYearMonthUtc = YearMonth.now(ZoneOffset.UTC);
-    int currentDayUtc = ZonedDateTime.now(ZoneOffset.UTC).getDayOfMonth();
+  private YearMonth parseYearMonth(int parsedDay, Instant referenceInstant) {
+    ZonedDateTime referenceDateTimeUtc = referenceInstant.atZone(ZoneOffset.UTC);
+    YearMonth currentYearMonthUtc = YearMonth.from(referenceDateTimeUtc);
+    int currentDayUtc = referenceDateTimeUtc.getDayOfMonth();
 
     if (parsedDay > currentDayUtc + 15) {
       return currentYearMonthUtc.minusMonths(1);

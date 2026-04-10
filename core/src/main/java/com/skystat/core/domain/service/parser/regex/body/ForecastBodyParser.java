@@ -1,6 +1,6 @@
 package com.skystat.core.domain.service.parser.regex.body;
 
-import com.skystat.core.domain.service.parser.FieldParser;
+import com.skystat.core.domain.service.parser.TemporalFieldParser;
 import com.skystat.core.domain.service.parser.regex.forecast.ChangeIndicatorParser;
 import com.skystat.core.domain.service.parser.regex.forecast.ChangeIndicatorParser.ChangeIndicatorMatch;
 import com.skystat.core.domain.service.parser.regex.forecast.CloudParser;
@@ -12,11 +12,12 @@ import com.skystat.core.domain.vo.taf.ChangeIndicator;
 import com.skystat.core.domain.vo.taf.ForecastBody;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class ForecastBodyParser implements FieldParser<List<ForecastBody>> {
+public class ForecastBodyParser implements TemporalFieldParser<List<ForecastBody>> {
 
   private final ChangeIndicatorParser changeIndicatorParser;
   private final ForecastSectionParser forecastSectionParser;
@@ -38,12 +39,12 @@ public class ForecastBodyParser implements FieldParser<List<ForecastBody>> {
   }
 
   @Override
-  public List<ForecastBody> parse(String reportText) {
+  public List<ForecastBody> parse(String reportText, Instant referenceInstant) {
     List<ForecastBody> forecastBodies = new ArrayList<>();
     ReferenceFields referenceFields = null;
 
     for (ForecastSection section : splitSections(reportText)) {
-      ParsedForecastSection parsedSection = forecastSectionParser.parse(section);
+      ParsedForecastSection parsedSection = forecastSectionParser.parse(section, referenceInstant);
       ForecastBody body = forecastBodyResolver.resolve(parsedSection, referenceFields, section.sectionRaw());
       forecastBodies.add(body);
 

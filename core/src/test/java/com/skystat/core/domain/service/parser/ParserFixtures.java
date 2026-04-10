@@ -1,5 +1,7 @@
 package com.skystat.core.domain.service.parser;
 
+import java.time.Instant;
+
 public final class ParserFixtures {
 
   private ParserFixtures() {
@@ -16,4 +18,5 @@ BECMG 1000/1002 28015G25KT 4000=
 """;
 
   public static final String HEADER_ONLY = "TAF AMD RKSI 082300Z 0900/1006 09010KT 4000 -RA FEW010 BKN030 OVC070";
+  public static final Instant TEST_REFERENCE_INSTANT = Instant.parse("2026-04-09T00:00:00Z");
 }

@@ -8,15 +8,14 @@ import com.skystat.core.domain.service.parser.regex.forecast.WindParser;
 import com.skystat.core.domain.vo.taf.ChangeIndicator;
 import org.junit.jupiter.api.Test;
 
-import java.time.YearMonth;
-
+import static com.skystat.core.domain.service.parser.ParserFixtures.TEST_REFERENCE_INSTANT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ForecastSectionParserTest {
 
   private final ForecastSectionParser parser = new ForecastSectionParser(
-    ForecastPeriodParser.withYearMonth(YearMonth.of(2026, 4)),
+    new ForecastPeriodParser(),
     new WindParser(),
     new VisibilityParser(),
     new WeatherParser(),
@@ -28,7 +27,7 @@ class ForecastSectionParserTest {
     ParsedForecastSection section = parser.parse(new ForecastSection(
       ChangeIndicator.TEMPO,
       "TEMPO 0902/0908 09015G25KT 2000 RA SCT005 BKN020 OVC060"
-    ));
+    ), TEST_REFERENCE_INSTANT);
 
     assertEquals(ChangeIndicator.TEMPO, section.indicator());
     assertTrue(section.wind().isPresent());

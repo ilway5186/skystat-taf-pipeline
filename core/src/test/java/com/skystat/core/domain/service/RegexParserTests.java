@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static com.skystat.core.domain.service.parser.ParserFixtures.TEST_REFERENCE_INSTANT;
 import static com.skystat.core.domain.vo.taf.ChangeIndicator.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -93,7 +94,7 @@ BECMG 1000/1002 28015G25KT 4000=
 
   @Test
   void ForecastBody_구간_분리에_성공한다() {
-    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText);
+    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText, TEST_REFERENCE_INSTANT);
 
     assertEquals(
       List.of(HEADER, TEMPO, BECMG, TEMPO, BECMG, BECMG),
@@ -117,7 +118,7 @@ BECMG 0909/0911 19008KT 2000 BR SCT005 BKN010 OVC030
 TEMPO 0914/0918 0800
       """;
 
-    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText);
+    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText, TEST_REFERENCE_INSTANT);
 
     ForecastBody referenceBody = forecastBodies.get(1);
     ForecastBody inheritedTempoBody = forecastBodies.get(2);
@@ -138,7 +139,7 @@ TEMPO 0921/0923 4000 SHRA
       """;
 
 
-    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText);
+    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText, TEST_REFERENCE_INSTANT);
 
     assertEquals(
       List.of(HEADER, FM, FM, TEMPO),

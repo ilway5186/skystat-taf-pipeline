@@ -12,8 +12,8 @@ import com.skystat.core.exception.ErrorCode;
 import com.skystat.core.exception.ParsingException;
 import lombok.RequiredArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class TafRegexParser implements TafParser {
@@ -24,15 +24,15 @@ public class TafRegexParser implements TafParser {
   private final StationIcaoParser stationIcaoParser;
 
   @Override
-  public Taf parse(String reportText) {
-    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText);
+  public Taf parse(String reportText, Instant referenceInstant) {
+    List<ForecastBody> forecastBodies = forecastBodyParser.parse(reportText, referenceInstant);
     ForecastBody header = forecastBodies.stream()
       .filter(body -> body.indicator().equals(ChangeIndicator.HEADER))
       .findFirst()
       .orElseThrow(() -> new ParsingException(ErrorCode.INVALID_TAF_FORMAT, reportText));
 
     ReportType reportType = reportTypeParser.parse(header.forecastRaw());
-    IssuedTime issuedTime = issuedTimeParser.parse(header.forecastRaw());
+    IssuedTime issuedTime = issuedTimeParser.parse(header.forecastRaw(), referenceInstant);
     String stationIcao = stationIcaoParser.parse(header.forecastRaw());
     ForecastPeriod validPeriod = header.period();
 

@@ -1,15 +1,16 @@
 package com.skystat.core.domain.service.parser.regex.forecast;
 
+import com.skystat.core.domain.service.parser.FieldParser;
 import com.skystat.core.domain.vo.weather.field.Visibility;
 import com.skystat.core.domain.vo.weather.unit.LengthUnit;
-import com.skystat.core.domain.service.parser.regex.core.RegexFieldParser;
+import com.skystat.core.domain.service.parser.regex.core.RegexParsingSupport;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 
 import static com.skystat.core.domain.service.parser.regex.forecast.VisibilityRegex.*;
 
-public class VisibilityParser extends RegexFieldParser<Optional<Visibility>> {
+public class VisibilityParser extends RegexParsingSupport implements FieldParser<Optional<Visibility>> {
 
   @Override
   public Optional<Visibility> parse(String reportText) {
