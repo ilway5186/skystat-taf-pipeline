@@ -1,4 +1,4 @@
-package com.skystat.core.ingestion;
+package com.skystat.taf.ingestion;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

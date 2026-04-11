@@ -1,17 +1,15 @@
-package com.skystat.core.ingestion.exception;
+package com.skystat.taf.ingestion.common.exception;
 
 import org.springframework.http.HttpStatus;
 
-public enum ErrorCode {
+public enum IngestionErrorCode {
 
   // HTTP Status 400 - Invalid 계열
   INVALID_INPUT(HttpStatus.BAD_REQUEST, "INVALID_INPUT", "Invalid request value."), // 요청 값이 올바르지 않습니다.
   INVALID_STATUS(HttpStatus.CONFLICT, "INVALID_STATUS", "Cannot process the request in the current status."), // 현재 상태에서는 요청을 처리할 수 없습니다.
 
-  // 401/403 - Auth 계열
-  INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN", "The authentication token is invalid."), // 인증 토큰이 유효하지 않습니다.
-  INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid username or password."), // 아이디 또는 비밀번호가 올바르지 않습니다.
-  FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "You do not have permission to perform this action."), // 해당 작업을 수행할 권한이 없습니다.
+  INVALID_RETRIEVAL_STATE(HttpStatus.CONFLICT, "INVALID_RETRIEVAL_STATE", "Invalid retrieval state."),
+  INVALID_RETRIEVAL_TIME(HttpStatus.BAD_REQUEST, "INVALID_RETRIEVAL_TIME", "Invalid retrieval time."),
 
   // 404/409 - Resource 계열
   RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "The requested resource could not be found."), // 요청한 리소스를 찾을 수 없습니다.
@@ -32,7 +30,7 @@ public enum ErrorCode {
   private final String code;
   private final String defaultMessage;
 
-  ErrorCode(HttpStatus status, String code, String defaultMessage) {
+  IngestionErrorCode(HttpStatus status, String code, String defaultMessage) {
     this.status = status;
     this.code = code;
     this.defaultMessage = defaultMessage;

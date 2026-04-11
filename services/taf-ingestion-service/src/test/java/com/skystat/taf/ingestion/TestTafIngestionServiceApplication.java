@@ -1,4 +1,4 @@
-package com.skystat.core.ingestion;
+package com.skystat.taf.ingestion;
 
 import org.springframework.boot.SpringApplication;
 
