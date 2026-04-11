@@ -23,27 +23,34 @@ public class RetrievalServiceImpl implements RetrievalService {
 
   private final RetrievalOutputPort retrievalOutputPort;
   private final RetrievalPersistencePort retrievalPersistencePort;
-  private final TafParser tafParser;
 
   @Override
   public Mono<Retrieval> retrieve(String icao) {
     Retrieval retrieval = createRetrieval(icao);
 
     return save(retrieval)
-      .flatMap(retrievalOutputPort::retrieve)
+      .flatMap(savedRetrieval -> retrievalOutputPort
+        .retrieve(savedRetrieval.icao())
+        .map(result -> complete(retrieval, result))
+      )
       .flatMap(this::save);
   }
 
   @Override
   public Flux<Retrieval> retrieve(List<String> icao, int concurrency) {
-    List<Retrieval> retrievals = icao.stream()
-      .map(this::createRetrieval)
-      .toList();
+    List<Retrieval> retrievals = icao.stream().map(this::createRetrieval).toList();
 
     return Flux.fromIterable(retrievals)
       .flatMap(this::save, Math.max(1, concurrency))
       .collectList()
-      .flatMapMany(savedRetrievals -> retrievalOutputPort.retrieve(savedRetrievals, concurrency))
+      .flatMapMany(savedRetrievals -> {
+          List<String> icaos = savedRetrievals.stream().map(Retrieval::icao).toList();
+
+          return retrievalOutputPort
+            .retrieve(icaos, concurrency)
+            .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
+        }
+      )
       .flatMap(this::save, Math.max(1, concurrency));
   }
 
@@ -56,7 +63,10 @@ public class RetrievalServiceImpl implements RetrievalService {
     retrieval.requestRetry(Instant.now());
 
     return save(retrieval)
-      .flatMap(retrievalOutputPort::retry)
+      .flatMap(savedRetrieval -> retrievalOutputPort
+        .retry(savedRetrieval.icao())
+        .map(result -> complete(savedRetrieval, result))
+      )
       .flatMap(this::save);
   }
 
@@ -76,7 +86,13 @@ public class RetrievalServiceImpl implements RetrievalService {
     return Flux.fromIterable(retrievals)
       .flatMap(this::save, Math.max(1, concurrency))
       .collectList()
-      .flatMapMany(savedRetrievals -> retrievalOutputPort.retry(savedRetrievals, concurrency))
+      .flatMapMany(savedRetrievals -> {
+        List<String> icaos = savedRetrievals.stream().map(Retrieval::icao).toList();
+
+        return retrievalOutputPort
+          .retry(icaos, concurrency)
+          .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
+      })
       .flatMap(this::save, Math.max(1, concurrency));
   }
 
@@ -97,6 +113,23 @@ public class RetrievalServiceImpl implements RetrievalService {
     return Mono.fromRunnable(() -> retrievalPersistencePort.save(retrieval))
       .subscribeOn(Schedulers.boundedElastic())
       .thenReturn(retrieval);
+  }
+
+  private static Retrieval complete(Retrieval retrieval, RetrievalResult result) {
+    if (result.succeeded()) {
+      retrieval.succeed(result.reportText(), Instant.now());
+      return retrieval;
+    }
+
+    retrieval.fail(result.failureReason(), result.failureDetail(), Instant.now());
+    return retrieval;
+  }
+
+  private static Retrieval findByIcao(List<Retrieval> retrievals, String icao) {
+    return retrievals.stream()
+      .filter(retrieval -> retrieval.icao().equalsIgnoreCase(icao))
+      .findFirst()
+      .orElseThrow(() -> new IngestionException(INVALID_STATUS, "Retrieval not found for ICAO: " + icao));
   }
 
 }
