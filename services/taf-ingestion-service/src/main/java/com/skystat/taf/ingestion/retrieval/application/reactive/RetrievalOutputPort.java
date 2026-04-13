@@ -1,5 +1,6 @@
-package com.skystat.taf.ingestion.retrieval.application;
+package com.skystat.taf.ingestion.retrieval.application.reactive;
 
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 

@@ -1,8 +1,10 @@
-package com.skystat.taf.ingestion.retrieval.application;
+package com.skystat.taf.ingestion.retrieval.application.reactive;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +16,7 @@ import java.util.stream.Collectors;
 import static com.skystat.taf.ingestion.common.exception.IngestionErrorCode.INVALID_STATUS;
 
 @Service
+@Profile("reactive")
 @RequiredArgsConstructor
 public class RetrievalServiceImpl implements RetrievalService {
 

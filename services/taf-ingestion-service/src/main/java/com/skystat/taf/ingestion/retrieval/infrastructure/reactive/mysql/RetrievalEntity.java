@@ -1,4 +1,4 @@
-package com.skystat.taf.ingestion.retrieval.infrastructure.mysql;
+package com.skystat.taf.ingestion.retrieval.infrastructure.reactive.mysql;
 
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;

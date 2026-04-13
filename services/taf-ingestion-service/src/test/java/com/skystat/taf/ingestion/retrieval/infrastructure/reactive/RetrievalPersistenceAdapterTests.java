@@ -1,16 +1,17 @@
-package com.skystat.taf.ingestion.retrieval.infrastructure;
+package com.skystat.taf.ingestion.retrieval.infrastructure.reactive;
 
 import com.skystat.taf.ingestion.TestcontainersConfiguration;
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalStatus;
-import com.skystat.taf.ingestion.retrieval.infrastructure.mysql.RetrievalPersistenceAdapter;
-import com.skystat.taf.ingestion.retrieval.infrastructure.mysql.RetrievalR2dbcRepository;
+import com.skystat.taf.ingestion.retrieval.infrastructure.reactive.mysql.RetrievalPersistenceAdapter;
+import com.skystat.taf.ingestion.retrieval.infrastructure.reactive.mysql.RetrievalR2dbcRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.r2dbc.test.autoconfigure.DataR2dbcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.test.StepVerifier;
 
 import java.time.Instant;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataR2dbcTest
+@ActiveProfiles("reactive")
 @Import({
   RetrievalPersistenceAdapter.class,
   TestcontainersConfiguration.class

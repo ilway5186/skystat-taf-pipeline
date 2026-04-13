@@ -1,9 +1,10 @@
-package com.skystat.taf.ingestion.retrieval.infrastructure;
+package com.skystat.taf.ingestion.retrieval.infrastructure.reactive;
 
 import com.skystat.taf.ingestion.common.annotation.Adapter;
-import com.skystat.taf.ingestion.retrieval.application.RetrievalOutputPort;
-import com.skystat.taf.ingestion.retrieval.application.RetrievalResult;
+import com.skystat.taf.ingestion.retrieval.application.reactive.RetrievalOutputPort;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 @Adapter
+@Profile("reactive")
 public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
 
   private static final String EXTERNAL_API_URL = "https://aviationweather.gov/api/data/taf";

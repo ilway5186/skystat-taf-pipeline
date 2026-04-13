@@ -1,4 +1,4 @@
-package com.skystat.taf.ingestion.retrieval.application;
+package com.skystat.taf.ingestion.retrieval.application.dto;
 
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
 
@@ -22,7 +22,7 @@ public record RetrievalResult(
   }
 
   public boolean isFailed() {
-    return isSucceeded();
+    return !isSucceeded();
   }
 
 }

@@ -1,6 +1,7 @@
-package com.skystat.taf.ingestion.retrieval.application;
+package com.skystat.taf.ingestion.retrieval.application.reactive;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalStatus;
