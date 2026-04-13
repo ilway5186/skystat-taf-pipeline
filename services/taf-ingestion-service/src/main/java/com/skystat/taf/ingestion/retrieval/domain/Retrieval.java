@@ -1,7 +1,9 @@
 package com.skystat.taf.ingestion.retrieval.domain;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Duration;
@@ -11,9 +13,11 @@ import static com.skystat.taf.ingestion.common.exception.IngestionErrorCode.*;
 
 @Getter
 @Accessors(fluent = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Retrieval {
 
-  private String id;
+  private String groupId;
   private String icao;
   private String reportText;
 
@@ -26,9 +30,9 @@ public class Retrieval {
 
   private int attemptCount;
 
-  public static Retrieval create(String id, String stationIcao, Instant requestedAt) {
+  public static Retrieval create(String groupId, String stationIcao, Instant requestedAt) {
     Retrieval retrieval = new Retrieval();
-    retrieval.id = requireNonBlank(id, "id");
+    retrieval.groupId = requireNonBlank(groupId, "id");
     retrieval.icao = requireNonBlank(stationIcao, "stationIcao");
     retrieval.requestedAt = requireNonNull(requestedAt, "requestedAt");
     retrieval.status = RetrievalStatus.REQUESTED;
@@ -58,34 +62,34 @@ public class Retrieval {
     this.reportText = null;
   }
 
-  public void requestRetry(Instant requestedAt) {
-    if (!retryable()) {
+  public Retrieval nextAttempt(Instant requestedAt) {
+    if (!isRetryable()) {
       throw new IngestionException(INVALID_RETRIEVAL_STATE, "Retrieval is not retryable.");
     }
 
-    this.requestedAt = requireNonNull(requestedAt, "requestedAt");
-    this.retrievedAt = null;
-    this.status = RetrievalStatus.REQUESTED;
-    this.failureReason = null;
-    this.failureDetail = null;
-    this.reportText = null;
-    this.attemptCount++;
+    Retrieval retrieval = new Retrieval();
+    retrieval.groupId = groupId;
+    retrieval.icao = icao;
+    retrieval.requestedAt = requireNonNull(requestedAt, "requestedAt");
+    retrieval.status = RetrievalStatus.REQUESTED;
+    retrieval.attemptCount = attemptCount + 1;
+    return retrieval;
   }
 
-  public boolean succeeded() {
+  public boolean isSucceeded() {
     return status == RetrievalStatus.SUCCEEDED;
   }
 
-  public boolean failed() {
+  public boolean isFailed() {
     return status == RetrievalStatus.FAILED;
   }
 
-  public boolean completed() {
-    return succeeded() || failed();
+  public boolean isCompleted() {
+    return isSucceeded() || isFailed();
   }
 
-  public boolean retryable() {
-    return failed() && failureReason.retryable();
+  public boolean isRetryable() {
+    return isFailed() && failureReason.retryable();
   }
 
   public Duration duration() {

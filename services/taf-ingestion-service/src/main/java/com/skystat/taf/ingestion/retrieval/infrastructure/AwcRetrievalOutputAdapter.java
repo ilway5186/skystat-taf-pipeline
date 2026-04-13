@@ -46,17 +46,17 @@ public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
           .orElse(null);
 
         if (response == null) {
-          return RetrievalResult.failed(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned no TAF report.");
+          return RetrievalResult.failure(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned no TAF report.");
         }
 
         String reportText = response.rawTAF();
         if (reportText == null || reportText.isBlank()) {
-          return RetrievalResult.failed(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned a blank rawTAF.");
+          return RetrievalResult.failure(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned a blank rawTAF.");
         }
 
-        return RetrievalResult.succeeded(icao, reportText);
+        return RetrievalResult.success(icao, reportText);
       })
-      .onErrorResume(error -> Mono.just(RetrievalResult.failed(icao, failureReason(error), error.getMessage()))));
+      .onErrorResume(error -> Mono.just(RetrievalResult.failure(icao, failureReason(error), error.getMessage()))));
   }
 
   @Override
@@ -100,15 +100,15 @@ public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
             AwcTafResponse response = responseByIcao.get(icao.toUpperCase(Locale.ROOT));
 
             if (response == null) {
-              return RetrievalResult.failed(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned no TAF report.");
+              return RetrievalResult.failure(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned no TAF report.");
             }
 
             String reportText = response.rawTAF();
             if (reportText == null || reportText.isBlank()) {
-              return RetrievalResult.failed(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned a blank rawTAF.");
+              return RetrievalResult.failure(icao, RetrievalFailureReason.EMPTY_RESPONSE, "AWC returned a blank rawTAF.");
             }
 
-            return RetrievalResult.succeeded(icao, reportText);
+            return RetrievalResult.success(icao, reportText);
           });
       })
       .onErrorResume(error -> {
@@ -116,7 +116,7 @@ public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
         String failureDetail = error.getMessage();
 
         return Flux.fromIterable(icaos)
-          .map(icao -> RetrievalResult.failed(icao, failureReason, failureDetail));
+          .map(icao -> RetrievalResult.failure(icao, failureReason, failureDetail));
       });
   }
 

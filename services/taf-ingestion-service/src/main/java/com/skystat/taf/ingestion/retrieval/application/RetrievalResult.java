@@ -9,20 +9,20 @@ public record RetrievalResult(
   String failureDetail
 ) {
 
-  public static RetrievalResult succeeded(String icao, String reportText) {
+  public static RetrievalResult success(String icao, String reportText) {
     return new RetrievalResult(icao, reportText, null, null);
   }
 
-  public static RetrievalResult failed(String icao, RetrievalFailureReason failureReason, String failureDetail) {
+  public static RetrievalResult failure(String icao, RetrievalFailureReason failureReason, String failureDetail) {
     return new RetrievalResult(icao, null, failureReason, failureDetail);
   }
 
-  public boolean succeeded() {
+  public boolean isSucceeded() {
     return failureReason == null;
   }
 
-  public boolean failed() {
-    return !succeeded();
+  public boolean isFailed() {
+    return isSucceeded();
   }
 
 }

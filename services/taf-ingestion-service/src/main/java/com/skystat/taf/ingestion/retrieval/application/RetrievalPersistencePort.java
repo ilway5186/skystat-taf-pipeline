@@ -1,13 +1,13 @@
 package com.skystat.taf.ingestion.retrieval.application;
 
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
-
-import java.util.Optional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface RetrievalPersistencePort {
 
-  void save(Retrieval retrieval);
+  Mono<Retrieval> save(Retrieval retrieval);
 
-  Optional<Retrieval> findByRetrievalId(String retrievalId);
+  Flux<Retrieval> findAllByGroupId(String groupId);
 
 }
