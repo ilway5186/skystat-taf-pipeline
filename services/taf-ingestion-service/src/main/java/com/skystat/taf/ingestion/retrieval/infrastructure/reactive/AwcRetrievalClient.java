@@ -1,7 +1,7 @@
 package com.skystat.taf.ingestion.retrieval.infrastructure.reactive;
 
 import com.skystat.taf.ingestion.common.annotation.Adapter;
-import com.skystat.taf.ingestion.retrieval.application.reactive.RetrievalOutputPort;
+import com.skystat.taf.ingestion.retrieval.application.reactive.RetrievalClientPort;
 import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
 import org.springframework.context.annotation.Profile;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Adapter
 @Profile("reactive")
-public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
+public class AwcRetrievalClient implements RetrievalClientPort {
 
   private static final String EXTERNAL_API_URL = "https://aviationweather.gov/api/data/taf";
   private static final String ACCEPT_HEADER = "application/json";
@@ -34,7 +34,7 @@ public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
 
   private final WebClient webClient;
 
-  public AwcRetrievalOutputAdapter(WebClient.Builder webClientBuilder) {
+  public AwcRetrievalClient(WebClient.Builder webClientBuilder) {
     this.webClient = webClientBuilder.build();
   }
 
@@ -66,16 +66,6 @@ public class AwcRetrievalOutputAdapter implements RetrievalOutputPort {
     return Flux.fromIterable(icaos)
       .buffer(CHUNK_SIZE)
       .flatMap(this::retrieveChunk, Math.max(1, concurrency));
-  }
-
-  @Override
-  public Mono<RetrievalResult> retry(String icao) {
-    return retrieve(icao);
-  }
-
-  @Override
-  public Flux<RetrievalResult> retry(List<String> icaos, int concurrency) {
-    return retrieve(icaos, concurrency);
   }
 
   private Mono<List<AwcTafResponse>> fetch(List<String> icaos) {

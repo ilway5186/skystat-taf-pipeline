@@ -20,7 +20,7 @@ import static com.skystat.taf.ingestion.common.exception.IngestionErrorCode.INVA
 @RequiredArgsConstructor
 public class RetrievalServiceImpl implements RetrievalService {
 
-  private final RetrievalOutputPort retrievalOutputPort;
+  private final RetrievalClientService retrievalClientService;
   private final RetrievalPersistencePort retrievalPersistencePort;
 
   @Override
@@ -28,7 +28,7 @@ public class RetrievalServiceImpl implements RetrievalService {
     Retrieval retrieval = createRetrieval(icao);
 
     return retrievalPersistencePort.save(retrieval)
-      .flatMap(savedRetrieval -> retrievalOutputPort
+      .flatMap(savedRetrieval -> retrievalClientService
         .retrieve(savedRetrieval.icao())
         .map(result -> complete(savedRetrieval, result))
       )
@@ -46,7 +46,7 @@ public class RetrievalServiceImpl implements RetrievalService {
       .flatMapMany(savedRetrievals -> {
           List<String> icaos = savedRetrievals.stream().map(Retrieval::icao).toList();
 
-          return retrievalOutputPort
+          return retrievalClientService
             .retrieve(icaos, concurrency)
             .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
         }
@@ -63,8 +63,8 @@ public class RetrievalServiceImpl implements RetrievalService {
     Retrieval retryRetrieval = retrieval.nextAttempt(Instant.now());
 
     return retrievalPersistencePort.save(retryRetrieval)
-      .flatMap(savedRetrieval -> retrievalOutputPort
-        .retry(savedRetrieval.icao())
+      .flatMap(savedRetrieval -> retrievalClientService
+        .retrieve(savedRetrieval.icao())
         .map(result -> complete(savedRetrieval, result))
       )
       .flatMap(retrievalPersistencePort::save);
@@ -91,8 +91,8 @@ public class RetrievalServiceImpl implements RetrievalService {
       .flatMapMany(savedRetrievals -> {
         List<String> icaos = savedRetrievals.stream().map(Retrieval::icao).toList();
 
-        return retrievalOutputPort
-          .retry(icaos, concurrency)
+        return retrievalClientService
+          .retrieve(icaos, concurrency)
           .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
       })
       .flatMap(retrievalPersistencePort::save, Math.max(1, concurrency));

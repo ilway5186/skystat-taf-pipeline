@@ -6,12 +6,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
-public interface RetrievalOutputPort {
+public interface RetrievalClientService {
 
   Mono<RetrievalResult> retrieve(String icao);
-  Flux<RetrievalResult> retrieve(List<String> icaos, int concurrency);
 
-  Mono<RetrievalResult> retry(String icao);
-  Flux<RetrievalResult> retry(List<String> icaos, int concurrency);
+  Flux<RetrievalResult> retrieve(List<String> icaos, int concurrency);
 
 }

@@ -22,7 +22,7 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retrieve는_요청을_저장하고_외부조회_성공결과를_완료상태로_저장해야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
     outputPort.retrieveResult = RetrievalResult.success("RKSI", "TAF RKSI 130500Z ...");
@@ -46,7 +46,7 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retrieve는_외부조회_실패결과를_실패상태로_저장해야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
     outputPort.retrieveResult = RetrievalResult.failure(
@@ -72,7 +72,7 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retrieve는_여러_공항을_저장하고_외부조회_성공결과를_완료상태로_저장해야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
 
@@ -96,11 +96,11 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retry는_같은_groupId로_다음_attempt를_저장하고_재조회해야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
     Retrieval failedRetrieval = failedRetryableRetrieval();
-    outputPort.retryResult = RetrievalResult.success("RKSI", "TAF RKSI 130600Z ...");
+    outputPort.retrieveResult = RetrievalResult.success("RKSI", "TAF RKSI 130600Z ...");
 
     StepVerifier.create(service.retry(failedRetrieval))
       .assertNext(retrieval -> {
@@ -112,7 +112,7 @@ public class RetrievalServiceImplTests {
       })
       .verifyComplete();
 
-    assertEquals(List.of("RKSI"), outputPort.retryIcaos);
+    assertEquals(List.of("RKSI"), outputPort.retrieveIcaos);
     assertEquals(2, persistencePort.savedRetrievals.size());
     assertEquals(RetrievalStatus.REQUESTED, persistencePort.savedRetrievals.get(0).status());
     assertEquals(RetrievalStatus.SUCCEEDED, persistencePort.savedRetrievals.get(1).status());
@@ -122,7 +122,7 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retry는_여러_수집건의_다음_attempt를_저장하고_재조회해야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
     Retrieval rksiRetrieval = failedRetryableRetrieval("RKSI");
@@ -136,7 +136,7 @@ public class RetrievalServiceImplTests {
       })
       .verifyComplete();
 
-    assertEquals(2, outputPort.retryIcaos.size());
+    assertEquals(2, outputPort.retrieveIcaos.size());
     assertEquals(4, persistencePort.savedRetrievals.size());
     assertEquals(2, persistencePort.savedRetrievals.stream()
       .filter(retrieval -> retrieval.status() == RetrievalStatus.REQUESTED)
@@ -148,7 +148,7 @@ public class RetrievalServiceImplTests {
 
   @Test
   void retry는_retryable_상태가_아니면_저장과_외부조회를_수행하지_않아야한다() {
-    FakeRetrievalOutputPort outputPort = new FakeRetrievalOutputPort();
+    FakeRetrievalClientService outputPort = new FakeRetrievalClientService();
     FakeRetrievalPersistencePort persistencePort = new FakeRetrievalPersistencePort();
     RetrievalServiceImpl service = new RetrievalServiceImpl(outputPort, persistencePort);
     Retrieval retrieval = Retrieval.create(newGroupId(), "RKSI", Instant.now());
@@ -159,7 +159,7 @@ public class RetrievalServiceImplTests {
       .expectError(IngestionException.class)
       .verify();
 
-    assertEquals(0, outputPort.retryIcaos.size());
+    assertEquals(0, outputPort.retrieveIcaos.size());
     assertEquals(0, persistencePort.savedRetrievals.size());
   }
 
@@ -191,12 +191,10 @@ public class RetrievalServiceImplTests {
     );
   }
 
-  private static class FakeRetrievalOutputPort implements RetrievalOutputPort {
+  private static class FakeRetrievalClientService implements RetrievalClientService {
 
     private RetrievalResult retrieveResult;
-    private RetrievalResult retryResult;
     private final List<String> retrieveIcaos = new ArrayList<>();
-    private final List<String> retryIcaos = new ArrayList<>();
 
     @Override
     public Mono<RetrievalResult> retrieve(String icao) {
@@ -207,18 +205,6 @@ public class RetrievalServiceImplTests {
     @Override
     public Flux<RetrievalResult> retrieve(List<String> icaos, int concurrency) {
       retrieveIcaos.addAll(icaos);
-      return Flux.fromIterable(icaos).map(icao -> RetrievalResult.success(icao, "TAF " + icao));
-    }
-
-    @Override
-    public Mono<RetrievalResult> retry(String icao) {
-      retryIcaos.add(icao);
-      return Mono.just(retryResult);
-    }
-
-    @Override
-    public Flux<RetrievalResult> retry(List<String> icaos, int concurrency) {
-      retryIcaos.addAll(icaos);
       return Flux.fromIterable(icaos).map(icao -> RetrievalResult.success(icao, "TAF " + icao));
     }
 
