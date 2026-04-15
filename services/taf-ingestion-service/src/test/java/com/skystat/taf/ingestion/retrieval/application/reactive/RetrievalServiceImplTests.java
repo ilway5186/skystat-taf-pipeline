@@ -2,6 +2,7 @@ package com.skystat.taf.ingestion.retrieval.application.reactive;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
 import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalServiceResult;
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalFailureReason;
 import com.skystat.taf.ingestion.retrieval.domain.RetrievalStatus;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RetrievalServiceImplTests {
 
@@ -28,12 +30,11 @@ public class RetrievalServiceImplTests {
     outputPort.retrieveResult = RetrievalResult.success("RKSI", "TAF RKSI 130500Z ...");
 
     StepVerifier.create(service.retrieve("rksi"))
-      .assertNext(retrieval -> {
-        assertNotNull(retrieval.groupId());
-        assertEquals("RKSI", retrieval.icao());
-        assertEquals(RetrievalStatus.SUCCEEDED, retrieval.status());
-        assertEquals("TAF RKSI 130500Z ...", retrieval.reportText());
-        assertEquals(1, retrieval.attemptCount());
+      .assertNext(result -> {
+        assertNotNull(result.groupId());
+        assertEquals("RKSI", result.icao());
+        assertEquals("TAF RKSI 130500Z ...", result.reportText());
+        assertTrue(result.isSucceeded());
       })
       .verifyComplete();
 
@@ -41,6 +42,8 @@ public class RetrievalServiceImplTests {
     assertEquals(2, persistencePort.savedRetrievals.size()); // REQUESTED 1개, SUCCESS 1개
     assertEquals(RetrievalStatus.REQUESTED, persistencePort.savedRetrievals.get(0).status());
     assertEquals(RetrievalStatus.SUCCEEDED, persistencePort.savedRetrievals.get(1).status());
+    assertEquals(1, persistencePort.savedRetrievals.get(1).attemptCount());
+    assertNotNull(persistencePort.savedRetrievals.get(1).groupId());
     assertEquals(persistencePort.savedRetrievals.get(0).groupId(), persistencePort.savedRetrievals.get(1).groupId());
   }
 
@@ -56,18 +59,19 @@ public class RetrievalServiceImplTests {
     );
 
     StepVerifier.create(service.retrieve("rksi"))
-      .assertNext(retrieval -> {
-        assertEquals("RKSI", retrieval.icao());
-        assertEquals(RetrievalStatus.FAILED, retrieval.status());
-        assertEquals(RetrievalFailureReason.HTTP_SERVER_ERROR, retrieval.failureReason());
-        assertEquals("Provider returned 500.", retrieval.failureDetail());
-        assertEquals(1, retrieval.attemptCount());
+      .assertNext(result -> {
+        assertNotNull(result.groupId());
+        assertEquals("RKSI", result.icao());
+        assertTrue(result.isFailed());
+        assertEquals(RetrievalFailureReason.HTTP_SERVER_ERROR, result.failureReason());
+        assertEquals("Provider returned 500.", result.failureDetail());
       })
       .verifyComplete();
 
     assertEquals(2, persistencePort.savedRetrievals.size());
     assertEquals(RetrievalStatus.REQUESTED, persistencePort.savedRetrievals.get(0).status());
     assertEquals(RetrievalStatus.FAILED, persistencePort.savedRetrievals.get(1).status());
+    assertEquals(1, persistencePort.savedRetrievals.get(1).attemptCount());
   }
 
   @Test
@@ -79,8 +83,8 @@ public class RetrievalServiceImplTests {
     StepVerifier.create(service.retrieve(List.of("rksi", "rkss"), 2).collectList())
       .assertNext(retrievals -> {
         assertEquals(2, retrievals.size());
-        assertEquals(2, retrievals.stream().filter(Retrieval::isSucceeded).count());
-        assertEquals(2, retrievals.stream().filter(retrieval -> retrieval.attemptCount() == 1).count());
+        assertEquals(2, retrievals.stream().filter(RetrievalServiceResult::isSucceeded).count());
+        assertEquals(2, retrievals.stream().filter(result -> result.groupId() != null).count());
       })
       .verifyComplete();
 
@@ -91,6 +95,9 @@ public class RetrievalServiceImplTests {
       .count());
     assertEquals(2, persistencePort.savedRetrievals.stream()
       .filter(retrieval -> retrieval.status() == RetrievalStatus.SUCCEEDED)
+      .count());
+    assertEquals(4, persistencePort.savedRetrievals.stream()
+      .filter(retrieval -> retrieval.attemptCount() == 1)
       .count());
   }
 
@@ -103,12 +110,11 @@ public class RetrievalServiceImplTests {
     outputPort.retrieveResult = RetrievalResult.success("RKSI", "TAF RKSI 130600Z ...");
 
     StepVerifier.create(service.retry(failedRetrieval))
-      .assertNext(retrieval -> {
-        assertEquals(failedRetrieval.groupId(), retrieval.groupId());
-        assertEquals("RKSI", retrieval.icao());
-        assertEquals(RetrievalStatus.SUCCEEDED, retrieval.status());
-        assertEquals("TAF RKSI 130600Z ...", retrieval.reportText());
-        assertEquals(2, retrieval.attemptCount());
+      .assertNext(result -> {
+        assertEquals(failedRetrieval.groupId(), result.groupId());
+        assertEquals("RKSI", result.icao());
+        assertEquals("TAF RKSI 130600Z ...", result.reportText());
+        assertTrue(result.isSucceeded());
       })
       .verifyComplete();
 
@@ -118,6 +124,7 @@ public class RetrievalServiceImplTests {
     assertEquals(RetrievalStatus.SUCCEEDED, persistencePort.savedRetrievals.get(1).status());
     assertEquals(failedRetrieval.groupId(), persistencePort.savedRetrievals.get(0).groupId());
     assertEquals(2, persistencePort.savedRetrievals.get(0).attemptCount());
+    assertEquals(2, persistencePort.savedRetrievals.get(1).attemptCount());
   }
 
   @Test
@@ -131,8 +138,8 @@ public class RetrievalServiceImplTests {
     StepVerifier.create(service.retry(List.of(rksiRetrieval, rkssRetrieval), 2).collectList())
       .assertNext(retrievals -> {
         assertEquals(2, retrievals.size());
-        assertEquals(2, retrievals.stream().filter(Retrieval::isSucceeded).count());
-        assertEquals(2, retrievals.stream().filter(retrieval -> retrieval.attemptCount() == 2).count());
+        assertEquals(2, retrievals.stream().filter(RetrievalServiceResult::isSucceeded).count());
+        assertEquals(2, retrievals.stream().filter(result -> result.groupId() != null).count());
       })
       .verifyComplete();
 
@@ -143,6 +150,9 @@ public class RetrievalServiceImplTests {
       .count());
     assertEquals(2, persistencePort.savedRetrievals.stream()
       .filter(retrieval -> retrieval.status() == RetrievalStatus.SUCCEEDED)
+      .count());
+    assertEquals(4, persistencePort.savedRetrievals.stream()
+      .filter(retrieval -> retrieval.attemptCount() == 2)
       .count());
   }
 
@@ -181,7 +191,6 @@ public class RetrievalServiceImplTests {
     return new Retrieval(
       retrieval.groupId(),
       retrieval.icao(),
-      retrieval.reportText(),
       retrieval.requestedAt(),
       retrieval.retrievedAt(),
       retrieval.status(),

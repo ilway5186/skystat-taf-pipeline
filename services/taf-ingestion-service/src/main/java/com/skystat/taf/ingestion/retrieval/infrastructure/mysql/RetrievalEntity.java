@@ -35,9 +35,6 @@ public class RetrievalEntity {
   @Column(name = "icao", nullable = false, updatable = false, length = 4)
   private String icao;
 
-  @Column(name = "report_text")
-  private String reportText;
-
   @Column(name = "requested_at", nullable = false)
   private Instant requestedAt;
 
@@ -75,7 +72,6 @@ public class RetrievalEntity {
       id,
       retrieval.groupId(),
       retrieval.icao(),
-      retrieval.reportText(),
       retrieval.requestedAt(),
       retrieval.retrievedAt(),
       retrieval.status(),
@@ -91,7 +87,6 @@ public class RetrievalEntity {
     return new Retrieval(
       groupId,
       icao,
-      reportText,
       requestedAt,
       retrievedAt,
       status,

@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS retrievals (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   group_id VARCHAR(16) NOT NULL,
   icao VARCHAR(4) NOT NULL,
-  report_text TEXT NULL,
   requested_at TIMESTAMP(6) NOT NULL,
   retrieved_at TIMESTAMP(6) NULL,
   status VARCHAR(32) NOT NULL,

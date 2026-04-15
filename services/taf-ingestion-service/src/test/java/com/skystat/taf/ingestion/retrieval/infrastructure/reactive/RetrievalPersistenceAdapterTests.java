@@ -75,12 +75,11 @@ public class RetrievalPersistenceAdapterTests {
       .expectNextCount(1)
       .verifyComplete();
 
-    retrieval.succeed("TAF RKSI 130500Z ...", Instant.now());
+    retrieval.succeed(Instant.now());
     StepVerifier.create(adapter.save(retrieval))
       .assertNext(savedRetrieval -> {
         assertEquals(retrieval.groupId(), savedRetrieval.groupId());
         assertEquals(RetrievalStatus.SUCCEEDED, savedRetrieval.status());
-        assertEquals("TAF RKSI 130500Z ...", savedRetrieval.reportText());
         assertEquals(1, savedRetrieval.attemptCount());
       })
       .verifyComplete();
@@ -89,7 +88,6 @@ public class RetrievalPersistenceAdapterTests {
       .assertNext(entities -> {
         assertEquals(1, entities.size());
         assertEquals("SUCCEEDED", entities.getFirst().status());
-        assertEquals("TAF RKSI 130500Z ...", entities.getFirst().reportText());
       })
       .verifyComplete();
   }
@@ -100,7 +98,7 @@ public class RetrievalPersistenceAdapterTests {
     firstAttempt.fail(RetrievalFailureReason.HTTP_SERVER_ERROR, "Provider returned 500.", Instant.now());
 
     Retrieval secondAttempt = firstAttempt.nextAttempt(Instant.now());
-    secondAttempt.succeed("TAF RKSI 130500Z ...", Instant.now());
+    secondAttempt.succeed(Instant.now());
 
     StepVerifier.create(adapter.save(firstAttempt))
       .expectNextCount(1)
@@ -133,7 +131,7 @@ public class RetrievalPersistenceAdapterTests {
     );
 
     Retrieval secondAttempt = firstAttempt.nextAttempt(Instant.now());
-    secondAttempt.succeed("TAF RKSI 130600Z ...", Instant.now());
+    secondAttempt.succeed(Instant.now());
 
     // 순서대로 나오나 봐야되니까 일부러 뒤에것부터 저장
     StepVerifier.create(adapter.save(secondAttempt))

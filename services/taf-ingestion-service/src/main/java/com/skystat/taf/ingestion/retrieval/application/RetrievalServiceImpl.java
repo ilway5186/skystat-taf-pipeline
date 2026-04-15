@@ -2,6 +2,7 @@ package com.skystat.taf.ingestion.retrieval.application;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
 import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalServiceResult;
 import com.skystat.taf.ingestion.retrieval.application.service.RetrievalClientService;
 import com.skystat.taf.ingestion.retrieval.application.service.RetrievalPersistenceService;
 import com.skystat.taf.ingestion.retrieval.application.service.RetrievalService;
@@ -25,18 +26,19 @@ public class RetrievalServiceImpl implements RetrievalService {
   private final RetrievalPersistenceService retrievalPersistenceService;
 
   @Override
-  public Retrieval retrieve(String icao) {
+  public RetrievalServiceResult retrieve(String icao) {
     Retrieval retrieval = createRetrieval(icao);
     Retrieval saved = retrievalPersistenceService.insert(retrieval);
 
     RetrievalResult result = retrievalClientService.retrieve(saved.icao());
     Retrieval completed = complete(saved, result);
 
-    return retrievalPersistenceService.update(completed);
+    retrievalPersistenceService.update(completed);
+    return RetrievalServiceResult.from(completed, result);
   }
 
   @Override
-  public List<Retrieval> retrieve(List<String> icao, int concurrency) {
+  public List<RetrievalServiceResult> retrieve(List<String> icao, int concurrency) {
     List<Retrieval> retrievals = new LinkedHashSet<>(icao).stream()
       .map(this::createRetrieval)
       .toList();
@@ -53,14 +55,17 @@ public class RetrievalServiceImpl implements RetrievalService {
       ));
 
     List<Retrieval> completed = saved.stream()
-      .map(savedRetrieval -> complete(savedRetrieval, resultMapByIcao.get(savedRetrieval.icao())))
+      .map(savedRetrieval -> complete(savedRetrieval, resultFor(savedRetrieval, resultMapByIcao)))
       .toList();
 
-    return retrievalPersistenceService.updateAll(completed);
+    retrievalPersistenceService.updateAll(completed);
+    return completed.stream()
+      .map(retrieval -> RetrievalServiceResult.from(retrieval, resultFor(retrieval, resultMapByIcao)))
+      .toList();
   }
 
   @Override
-  public Retrieval retry(Retrieval retrieval) {
+  public RetrievalServiceResult retry(Retrieval retrieval) {
     if (!retrieval.isRetryable()) {
       throw new IngestionException(INVALID_STATUS, retrieval.groupId() + " is not retryable.");
     }
@@ -71,11 +76,12 @@ public class RetrievalServiceImpl implements RetrievalService {
     RetrievalResult result = retrievalClientService.retrieve(saved.icao());
     Retrieval completed = complete(saved, result);
 
-    return retrievalPersistenceService.update(completed);
+    retrievalPersistenceService.update(completed);
+    return RetrievalServiceResult.from(completed, result);
   }
 
   @Override
-  public List<Retrieval> retry(List<Retrieval> retrievals, int concurrency) {
+  public List<RetrievalServiceResult> retry(List<Retrieval> retrievals, int concurrency) {
     List<Retrieval> notRetryable = retrievals.stream()
       .filter(retrieval -> !retrieval.isRetryable())
       .toList();
@@ -104,10 +110,13 @@ public class RetrievalServiceImpl implements RetrievalService {
       ));
 
     List<Retrieval> completed = saved.stream()
-      .map(savedRetrieval -> complete(savedRetrieval, resultMapByIcao.get(savedRetrieval.icao())))
+      .map(savedRetrieval -> complete(savedRetrieval, resultFor(savedRetrieval, resultMapByIcao)))
       .toList();
 
-    return retrievalPersistenceService.updateAll(completed);
+    retrievalPersistenceService.updateAll(completed);
+    return completed.stream()
+      .map(retrieval -> RetrievalServiceResult.from(retrieval, resultFor(retrieval, resultMapByIcao)))
+      .toList();
   }
 
   private Retrieval createRetrieval(String icao) {
@@ -128,12 +137,20 @@ public class RetrievalServiceImpl implements RetrievalService {
 
   private Retrieval complete(Retrieval retrieval, RetrievalResult result) {
     if (result.isSucceeded()) {
-      retrieval.succeed(result.reportText(), Instant.now());
+      retrieval.succeed(Instant.now());
       return retrieval;
     }
 
     retrieval.fail(result.failureReason(), result.failureDetail(), Instant.now());
     return retrieval;
+  }
+
+  private RetrievalResult resultFor(Retrieval retrieval, Map<String, RetrievalResult> resultMapByIcao) {
+    RetrievalResult result = resultMapByIcao.get(retrieval.icao());
+    if (result == null) {
+      throw new IngestionException(INVALID_STATUS, "Retrieval result not found for ICAO: " + retrieval.icao());
+    }
+    return result;
   }
 
 }

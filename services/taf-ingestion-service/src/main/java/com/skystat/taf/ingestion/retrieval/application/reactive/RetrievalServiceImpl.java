@@ -2,6 +2,7 @@ package com.skystat.taf.ingestion.retrieval.application.reactive;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
 import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalResult;
+import com.skystat.taf.ingestion.retrieval.application.dto.RetrievalServiceResult;
 import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
@@ -24,19 +25,20 @@ public class RetrievalServiceImpl implements RetrievalService {
   private final RetrievalPersistencePort retrievalPersistencePort;
 
   @Override
-  public Mono<Retrieval> retrieve(String icao) {
+  public Mono<RetrievalServiceResult> retrieve(String icao) {
     Retrieval retrieval = createRetrieval(icao);
 
     return retrievalPersistencePort.save(retrieval)
       .flatMap(savedRetrieval -> retrievalClientService
         .retrieve(savedRetrieval.icao())
-        .map(result -> complete(savedRetrieval, result))
-      )
-      .flatMap(retrievalPersistencePort::save);
+        .flatMap(result -> retrievalPersistencePort
+          .save(complete(savedRetrieval, result))
+          .map(completed -> RetrievalServiceResult.from(completed, result))
+        ));
   }
 
   @Override
-  public Flux<Retrieval> retrieve(List<String> icao, int concurrency) {
+  public Flux<RetrievalServiceResult> retrieve(List<String> icao, int concurrency) {
     List<Retrieval> retrievals = new HashSet<>(icao).stream()
       .map(this::createRetrieval).toList();
 
@@ -48,14 +50,13 @@ public class RetrievalServiceImpl implements RetrievalService {
 
           return retrievalClientService
             .retrieve(icaos, concurrency)
-            .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
+            .flatMap(result -> saveCompleted(savedRetrievals, result), Math.max(1, concurrency));
         }
-      )
-      .flatMap(retrievalPersistencePort::save, Math.max(1, concurrency));
+      );
   }
 
   @Override
-  public Mono<Retrieval> retry(Retrieval retrieval) {
+  public Mono<RetrievalServiceResult> retry(Retrieval retrieval) {
     if (!retrieval.isRetryable()) {
       return Mono.error(new IngestionException(INVALID_STATUS, retrieval.groupId() + " is not retryable."));
     }
@@ -65,13 +66,14 @@ public class RetrievalServiceImpl implements RetrievalService {
     return retrievalPersistencePort.save(retryRetrieval)
       .flatMap(savedRetrieval -> retrievalClientService
         .retrieve(savedRetrieval.icao())
-        .map(result -> complete(savedRetrieval, result))
-      )
-      .flatMap(retrievalPersistencePort::save);
+        .flatMap(result -> retrievalPersistencePort
+          .save(complete(savedRetrieval, result))
+          .map(completed -> RetrievalServiceResult.from(completed, result))
+        ));
   }
 
   @Override
-  public Flux<Retrieval> retry(List<Retrieval> retrievals, int concurrency) {
+  public Flux<RetrievalServiceResult> retry(List<Retrieval> retrievals, int concurrency) {
     List<Retrieval> notRetryable = retrievals.stream().filter(retrieval -> !retrieval.isRetryable()).toList();
     if (!notRetryable.isEmpty()) {
       String ids = notRetryable.stream()
@@ -93,9 +95,8 @@ public class RetrievalServiceImpl implements RetrievalService {
 
         return retrievalClientService
           .retrieve(icaos, concurrency)
-          .map(result -> complete(findByIcao(savedRetrievals, result.icao()), result));
-      })
-      .flatMap(retrievalPersistencePort::save, Math.max(1, concurrency));
+          .flatMap(result -> saveCompleted(savedRetrievals, result), Math.max(1, concurrency));
+      });
   }
 
   private Retrieval createRetrieval(String icao) {
@@ -116,7 +117,7 @@ public class RetrievalServiceImpl implements RetrievalService {
 
   private static Retrieval complete(Retrieval retrieval, RetrievalResult result) {
     if (result.isSucceeded()) {
-      retrieval.succeed(result.reportText(), Instant.now());
+      retrieval.succeed(Instant.now());
       return retrieval;
     }
 
@@ -129,6 +130,14 @@ public class RetrievalServiceImpl implements RetrievalService {
       .filter(retrieval -> retrieval.icao().equalsIgnoreCase(icao))
       .findFirst()
       .orElseThrow(() -> new IngestionException(INVALID_STATUS, "Retrieval not found for ICAO: " + icao));
+  }
+
+  private Mono<RetrievalServiceResult> saveCompleted(List<Retrieval> savedRetrievals, RetrievalResult result) {
+    Retrieval savedRetrieval = findByIcao(savedRetrievals, result.icao());
+
+    return retrievalPersistencePort
+      .save(complete(savedRetrieval, result))
+      .map(completed -> RetrievalServiceResult.from(completed, result));
   }
 
 }

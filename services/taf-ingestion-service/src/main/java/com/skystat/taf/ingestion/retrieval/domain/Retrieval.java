@@ -19,7 +19,6 @@ public class Retrieval {
 
   private String groupId;
   private String icao;
-  private String reportText;
 
   private Instant requestedAt;
   private Instant retrievedAt;
@@ -40,11 +39,10 @@ public class Retrieval {
     return retrieval;
   }
 
-  public void succeed(String reportText, Instant retrievedAt) {
+  public void succeed(Instant retrievedAt) {
     ensureRequested();
     ensureValidRetrievedAt(retrievedAt);
 
-    this.reportText = requireNonBlank(reportText, "reportText");
     this.retrievedAt = retrievedAt;
     this.status = RetrievalStatus.SUCCEEDED;
     this.failureReason = null;
@@ -59,7 +57,6 @@ public class Retrieval {
     this.failureDetail = failureDetail;
     this.retrievedAt = retrievedAt;
     this.status = RetrievalStatus.FAILED;
-    this.reportText = null;
   }
 
   public Retrieval nextAttempt(Instant requestedAt) {
