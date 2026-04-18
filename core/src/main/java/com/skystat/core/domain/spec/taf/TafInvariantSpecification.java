@@ -19,6 +19,6 @@ public class TafInvariantSpecification extends AbstractSpecification<Taf> {
 
   @Override
   public void check(Taf taf) {
-    ((AbstractSpecification<Taf>) delegate).check(taf);
+    delegate.check(taf);
   }
 }
