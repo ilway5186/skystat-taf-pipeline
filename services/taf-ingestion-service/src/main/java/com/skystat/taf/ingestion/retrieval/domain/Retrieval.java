@@ -10,6 +10,8 @@ import java.time.Duration;
 import java.time.Instant;
 
 import static com.skystat.taf.ingestion.common.exception.IngestionErrorCode.*;
+import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.requireNonBlank;
+import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.requireNonNull;
 
 @Getter
 @Accessors(fluent = true)
@@ -107,20 +109,6 @@ public class Retrieval {
     if (retrievedAt.isBefore(requestedAt)) {
       throw new IngestionException(INVALID_RETRIEVAL_TIME, "Retrieved time cannot be before requested time.");
     }
-  }
-
-  private static String requireNonBlank(String value, String fieldName) {
-    if (value == null || value.isBlank()) {
-      throw new IngestionException(INVALID_INPUT, fieldName + " cannot be blank.");
-    }
-    return value;
-  }
-
-  private static <T> T requireNonNull(T value, String fieldName) {
-    if (value == null) {
-      throw new IngestionException(INVALID_INPUT, fieldName + " cannot be null.");
-    }
-    return value;
   }
 
 }

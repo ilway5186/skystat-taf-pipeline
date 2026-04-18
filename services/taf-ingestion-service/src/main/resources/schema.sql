@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS retrievals (
   created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   updated_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
-  UNIQUE KEY uq_retrieval_attempt (group_id, attempt_count),
+  UNIQUE KEY uk_retrieval_attempt (group_id, attempt_count),
 
   INDEX idx_retrieval_icao (icao),
   INDEX idx_retrieval_status_requested_at (status, requested_at)
