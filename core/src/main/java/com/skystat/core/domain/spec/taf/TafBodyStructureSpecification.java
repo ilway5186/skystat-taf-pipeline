@@ -26,21 +26,11 @@ public class TafBodyStructureSpecification extends AbstractSpecification<Taf> {
 
   @Override
   public void check(Taf taf) {
-    List<ForecastBody> bodies = taf.body();
-
-    if (bodies.isEmpty()) {
-      throw new InvalidInputException(ErrorCode.INVALID_INPUT, "body cannot be empty.");
-    }
-    if (bodies.stream().anyMatch(Objects::isNull)) {
-      throw new InvalidInputException(ErrorCode.INVALID_INPUT, "body cannot contain null elements.");
-    }
-
-    long headerCount = bodies.stream()
-      .filter(forecastBody -> forecastBody.indicator() == ChangeIndicator.HEADER)
-      .count();
-
-    if (headerCount != 1) {
-      throw new InvalidInputException(ErrorCode.INVALID_INPUT, "body must contain exactly one HEADER forecast.");
+    if (!isSatisfiedBy(taf)) {
+      throw new InvalidInputException(
+        ErrorCode.INVALID_INPUT,
+        "body must be non-empty, cannot contain null elements, and must contain exactly one HEADER forecast."
+      );
     }
   }
 }

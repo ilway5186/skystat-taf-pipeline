@@ -18,11 +18,11 @@ public class TafTemperatureTimesWithinValidPeriodSpecification extends AbstractS
 
   @Override
   public void check(Taf taf) {
-    if (taf.temperatures().stream().anyMatch(Objects::isNull)) {
-      throw new InvalidInputException(ErrorCode.INVALID_INPUT, "temperatures cannot contain null elements.");
-    }
-    if (!taf.temperatures().stream().allMatch(temperature -> taf.validPeriod().contains(temperature.time()))) {
-      throw new InvalidInputException(ErrorCode.INVALID_INPUT, "all forecast temperatures must be within validPeriod.");
+    if (!isSatisfiedBy(taf)) {
+      throw new InvalidInputException(
+        ErrorCode.INVALID_INPUT,
+        "temperatures cannot contain null elements and all forecast temperatures must be within validPeriod."
+      );
     }
   }
 }

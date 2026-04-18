@@ -16,17 +16,8 @@ public class AndSpecification<T> extends AbstractSpecification<T> {
 
   @Override
   public void check(T t) throws BusinessException {
-    if (spec1 instanceof AbstractSpecification<T> abstractSpec1) {
-      abstractSpec1.check(t);
-    } else if (!spec1.isSatisfiedBy(t)) {
-      throw new IllegalStateException("First specification is not satisfied.");
-    }
-
-    if (spec2 instanceof AbstractSpecification<T> abstractSpec2) {
-      abstractSpec2.check(t);
-    } else if (!spec2.isSatisfiedBy(t)) {
-      throw new IllegalStateException("Second specification is not satisfied.");
-    }
+    spec1.check(t);
+    spec2.check(t);
   }
 
 }
