@@ -23,6 +23,7 @@ public class TafPublicationRequest {
   private TafPublicationRequestStatus status;
   private Instant requestedAt;
   private Instant publishedAt;
+  private Instant failedAt;
   private String failureReason;
   private int retryCount;
 
@@ -32,6 +33,7 @@ public class TafPublicationRequest {
       requireNonBlank(tafId, "tafId"),
       TafPublicationRequestStatus.PENDING,
       requireNonNull(requestedAt, "requestedAt"),
+      null,
       null,
       null,
       0
@@ -46,10 +48,11 @@ public class TafPublicationRequest {
     this.failureReason = null;
   }
 
-  public void markFailed(String failureReason) {
+  public void markFailed(String failureReason, Instant failedAt) {
     ensurePending();
 
     this.status = TafPublicationRequestStatus.FAILED;
+    this.failedAt = failedAt;
     this.failureReason = requireNonBlank(failureReason, "failureReason");
   }
 
