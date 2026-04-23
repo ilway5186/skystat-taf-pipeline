@@ -16,22 +16,22 @@ import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.r
 @Accessors(fluent = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TafPublicationRequest {
+public class PublicationRequest {
 
   private String id;
   private String tafId;
-  private TafPublicationRequestStatus status;
+  private PublicationRequestStatus status;
   private Instant requestedAt;
   private Instant publishedAt;
   private Instant failedAt;
   private String failureReason;
   private int retryCount;
 
-  public static TafPublicationRequest pending(String id, String tafId, Instant requestedAt) {
-    return new TafPublicationRequest(
+  public static PublicationRequest pending(String id, String tafId, Instant requestedAt) {
+    return new PublicationRequest(
       requireNonBlank(id, "id"),
       requireNonBlank(tafId, "tafId"),
-      TafPublicationRequestStatus.PENDING,
+      PublicationRequestStatus.PENDING,
       requireNonNull(requestedAt, "requestedAt"),
       null,
       null,
@@ -43,7 +43,7 @@ public class TafPublicationRequest {
   public void markSent(Instant publishedAt) {
     ensurePending();
 
-    this.status = TafPublicationRequestStatus.SENT;
+    this.status = PublicationRequestStatus.SENT;
     this.publishedAt = requireNonNull(publishedAt, "publishedAt");
     this.failureReason = null;
   }
@@ -51,23 +51,23 @@ public class TafPublicationRequest {
   public void markFailed(String failureReason, Instant failedAt) {
     ensurePending();
 
-    this.status = TafPublicationRequestStatus.FAILED;
+    this.status = PublicationRequestStatus.FAILED;
     this.failedAt = failedAt;
     this.failureReason = requireNonBlank(failureReason, "failureReason");
   }
 
   public void retry(Instant requestedAt) {
-    if (status != TafPublicationRequestStatus.FAILED) {
+    if (status != PublicationRequestStatus.FAILED) {
       throw new IngestionException(IngestionErrorCode.INVALID_STATUS, "Not retryable status.");
     }
 
-    this.status = TafPublicationRequestStatus.PENDING;
+    this.status = PublicationRequestStatus.PENDING;
     this.retryCount++;
     this.requestedAt = requireNonNull(requestedAt, "requestedAt");
   }
 
   private void ensurePending() {
-    if (status != TafPublicationRequestStatus.PENDING) {
+    if (status != PublicationRequestStatus.PENDING) {
       throw new IngestionException(IngestionErrorCode.INVALID_STATUS, "Not pending status.");
     }
   }

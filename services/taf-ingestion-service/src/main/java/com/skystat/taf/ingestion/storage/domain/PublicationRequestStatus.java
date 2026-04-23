@@ -1,6 +1,6 @@
 package com.skystat.taf.ingestion.storage.domain;
 
-public enum TafPublicationRequestStatus {
+public enum PublicationRequestStatus {
   PENDING,
   SENT,
   FAILED

@@ -2,6 +2,7 @@ package com.skystat.core.domain.service.parser.regex;
 
 import com.skystat.core.domain.entity.Taf;
 import com.skystat.core.domain.service.parser.TafParser;
+import com.skystat.core.domain.service.parser.TemporalFieldParser;
 import com.skystat.core.domain.service.parser.regex.body.ForecastBodyParser;
 import com.skystat.core.domain.service.parser.regex.header.IssuedTimeParser;
 import com.skystat.core.domain.service.parser.regex.header.ReportTypeParser;
