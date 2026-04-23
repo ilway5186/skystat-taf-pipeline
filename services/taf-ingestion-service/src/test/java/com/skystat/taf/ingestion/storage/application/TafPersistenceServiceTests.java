@@ -2,6 +2,7 @@ package com.skystat.taf.ingestion.storage.application;
 
 import com.skystat.taf.ingestion.common.exception.IngestionErrorCode;
 import com.skystat.taf.ingestion.common.exception.IngestionException;
+import com.skystat.taf.ingestion.storage.application.port.TafPersistenceServicePort;
 import com.skystat.taf.ingestion.storage.application.service.TafPersistenceService;
 import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
 import com.skystat.taf.ingestion.storage.domain.vo.TafParsingStatus;
@@ -11,16 +12,15 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TafPersistenceServiceTests {
 
-  Instant time = Instant.now();
-
   @Test
   void tafId로_TAF_저장여부를_알_수_있다() {
-    TafPersistenceService fakeService = new FakeTafPersistenceService();
+    TafPersistenceService fakeService = new TafPersistenceServiceImpl(new FakeTafPersistenceServicePort());
     String tafId1 = "abcd1234";
     String tafId2 = "no-exists";
 
@@ -32,7 +32,7 @@ public class TafPersistenceServiceTests {
 
   @Test
   void 동일한_tafId로_StoredTaf를_insert하면_예외가_발생한다() {
-    TafPersistenceService fakeService = new FakeTafPersistenceService();
+    TafPersistenceService fakeService = new TafPersistenceServiceImpl(new FakeTafPersistenceServicePort());
     StoredTaf alreadyExists = new StoredTaf(
       "abcd1234",
       "awc",
@@ -50,7 +50,7 @@ public class TafPersistenceServiceTests {
 
   @Test
   void 중복되지_않는_tafId의_StoredTaf는_insert에_성공해야_한다() {
-    TafPersistenceService fakeService = new FakeTafPersistenceService();
+    TafPersistenceService fakeService = new TafPersistenceServiceImpl(new FakeTafPersistenceServicePort());
     StoredTaf newOne = new StoredTaf(
       "abcd12345",
       "awc",
@@ -67,11 +67,11 @@ public class TafPersistenceServiceTests {
   }
 
 
-  static class FakeTafPersistenceService implements TafPersistenceService {
+  static class FakeTafPersistenceServicePort implements TafPersistenceServicePort {
 
     List<StoredTaf> list = new ArrayList<>();
 
-    public FakeTafPersistenceService() {
+    public FakeTafPersistenceServicePort() {
       list.add(new StoredTaf(
         "abcd1234",
         "awc",
@@ -96,6 +96,14 @@ public class TafPersistenceServiceTests {
       list.add(storedTaf);
       return storedTaf;
     }
-  }
 
+
+    @Override
+    public Optional<StoredTaf> findByTafId(String tafId) {
+      if (!existsByTafId(tafId)) return Optional.empty();
+
+      return list.stream().filter(t -> t.tafId().equals(tafId)).findFirst();
+    }
+
+  }
 }

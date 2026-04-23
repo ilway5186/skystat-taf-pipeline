@@ -20,7 +20,7 @@ public class PublicationRequestTests {
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
 
-    assertEquals(id, publicationRequest.id());
+    assertEquals(id, publicationRequest.requestId());
     assertEquals(tafId, publicationRequest.tafId());
     assertEquals(requestedAt, publicationRequest.requestedAt());
     assertEquals(PublicationRequestStatus.PENDING, publicationRequest.status());

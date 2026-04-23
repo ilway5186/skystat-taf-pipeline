@@ -18,7 +18,7 @@ import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.r
 @AllArgsConstructor
 public class PublicationRequest {
 
-  private String id;
+  private String requestId;
   private String tafId;
   private PublicationRequestStatus status;
   private Instant requestedAt;
@@ -27,9 +27,9 @@ public class PublicationRequest {
   private String failureReason;
   private int retryCount;
 
-  public static PublicationRequest pending(String id, String tafId, Instant requestedAt) {
+  public static PublicationRequest pending(String requestId, String tafId, Instant requestedAt) {
     return new PublicationRequest(
-      requireNonBlank(id, "id"),
+      requireNonBlank(requestId, "requestId"),
       requireNonBlank(tafId, "tafId"),
       PublicationRequestStatus.PENDING,
       requireNonNull(requestedAt, "requestedAt"),

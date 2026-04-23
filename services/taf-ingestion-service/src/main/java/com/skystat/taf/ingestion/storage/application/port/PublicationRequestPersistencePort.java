@@ -1,5 +1,6 @@
 package com.skystat.taf.ingestion.storage.application.port;
 
+import com.skystat.taf.ingestion.retrieval.application.dto.GroupIdAndAttemptCount;
 import com.skystat.taf.ingestion.storage.domain.PublicationRequest;
 
 import java.util.List;
@@ -7,7 +8,11 @@ import java.util.Optional;
 
 public interface PublicationRequestPersistencePort {
 
-  boolean existsByTafId(String tafId);
+  boolean existsByRequestId(String requestId);
+
+  boolean existsAnyByRequestId(List<String> requestIds);
+
+  boolean existsAllByRequestId(List<String> requestIds);
 
   PublicationRequest insert(PublicationRequest request);
 
@@ -17,6 +22,6 @@ public interface PublicationRequestPersistencePort {
 
   List<PublicationRequest> updateAll(List<PublicationRequest> requests);
 
-  Optional<PublicationRequest> findByTafId(String tafId);
+  Optional<PublicationRequest> findByRequestId(String requestId);
 
 }

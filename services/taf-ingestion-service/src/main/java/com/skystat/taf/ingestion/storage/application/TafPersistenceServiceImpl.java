@@ -8,6 +8,7 @@ import com.skystat.taf.ingestion.storage.application.service.TafPersistenceServi
 import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,11 +19,13 @@ public class TafPersistenceServiceImpl implements TafPersistenceService {
   private final TafPersistenceServicePort tafPersistencePort;
 
   @Override
+  @Transactional(readOnly = true)
   public boolean existsByTafId(String tafId) {
     return tafPersistencePort.existsByTafId(tafId);
   }
 
   @Override
+  @Transactional
   public StoredTaf insert(StoredTaf taf) {
     if (existsByTafId(taf.tafId())) {
       throw new IngestionException(IngestionErrorCode.DUPLICATE_RESOURCE, duplicateMessage(taf));
