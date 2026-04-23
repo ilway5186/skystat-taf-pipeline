@@ -37,7 +37,7 @@ public class TafRegexParser implements TafParser {
     String stationIcao = stationIcaoParser.parse(header.forecastRaw());
     ForecastPeriod validPeriod = header.period();
 
-    TafId id = TafId.fromReportText(reportText);
+    TafId id = TafId.from(reportText, issuedTime.time());
 
     return Taf.builder()
       .tafId(id)

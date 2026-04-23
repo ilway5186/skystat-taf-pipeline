@@ -2,12 +2,12 @@ package com.skystat.core.domain.vo.taf;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 import lombok.experimental.Accessors;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Locale;
 
@@ -31,11 +31,11 @@ public final class TafId  {
     return new TafId(hashedValue.trim().toLowerCase(Locale.ROOT));
   }
 
-  public static TafId fromReportText(String reportText) {
+  public static TafId from(String reportText, Instant issuedTime) {
     String normalized = normalize(reportText);
-    return new TafId(sha256(normalized));
+    String key = normalized + "|" + issuedTime.toString();
+    return new TafId(sha256(key));
   }
-
 
   private static String normalize(String reportText) {
     return reportText.trim().replaceAll("\\s+", " ").toUpperCase();
