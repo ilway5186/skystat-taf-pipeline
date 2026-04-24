@@ -1,7 +1,5 @@
 package com.skystat.taf.ingestion.storage.domain;
 
-import com.skystat.core.domain.vo.taf.TafId;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.skystat.taf.ingestion.common.exception.IngestionException;
@@ -15,7 +13,7 @@ public class PublicationRequestTests {
   @Test
   void pending_상태의_TAF발행요청_생성에_성공해야_한다() {
     String id = UUID.randomUUID().toString();
-    String tafId = TafId.fromReportText("TAF RKSI 210500Z 2106/2212 ...").value();
+    String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
@@ -29,7 +27,7 @@ public class PublicationRequestTests {
   @Test
   void pending_상태에서_발행_상태로_상태를_바꿀_수_있다() {
     String id = UUID.randomUUID().toString();
-    String tafId = TafId.fromReportText("TAF RKSI 210500Z 2106/2212 ...").value();
+    String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
@@ -45,7 +43,7 @@ public class PublicationRequestTests {
   @Test
   void pending_상태에서_발행실패_상태로_상태를_바꿀_수_있다() {
     String id = UUID.randomUUID().toString();
-    String tafId = TafId.fromReportText("TAF RKSI 210500Z 2106/2212 ...").value();
+    String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
@@ -62,7 +60,7 @@ public class PublicationRequestTests {
   @Test
   void 발행실패_상태에서_재시도할_수_있다() {
     String id = UUID.randomUUID().toString();
-    String tafId = TafId.fromReportText("TAF RKSI 210500Z 2106/2212 ...").value();
+    String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
@@ -83,7 +81,7 @@ public class PublicationRequestTests {
   @Test
   void pending_상태가_아니면_발행_상태로_상태를_바꿀_수_없다() {
     String id = UUID.randomUUID().toString();
-    String tafId = TafId.fromReportText("TAF RKSI 210500Z 2106/2212 ...").value();
+    String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
     PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);

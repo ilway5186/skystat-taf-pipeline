@@ -7,10 +7,10 @@ import com.skystat.core.domain.service.parser.regex.forecast.*;
 import com.skystat.core.domain.service.parser.regex.header.IssuedTimeParser;
 import com.skystat.core.domain.service.parser.regex.header.ReportTypeParser;
 import com.skystat.core.domain.service.parser.regex.header.StationIcaoParser;
+import com.skystat.taf.ingestion.common.policy.IdGenerationPolicy;
 import com.skystat.taf.ingestion.storage.application.dto.TafParsingResult;
 import com.skystat.taf.ingestion.storage.application.service.TafParsingService;
 import com.skystat.taf.ingestion.storage.domain.vo.TafParsingStatus;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -18,6 +18,8 @@ import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TafParsingServiceTests {
+
+  IdGenerationPolicy idGenerationPolicy = () -> "generated-id";
 
   TafParser parser = new TafRegexParser(
     new ForecastBodyParser(
@@ -35,7 +37,7 @@ public class TafParsingServiceTests {
 
   @Test
   void TAF파싱에_성공하면_파싱상태는_성공이고_파싱에러원인은_null이다() {
-    TafParsingService parsingService = new TafParsingServiceImpl(parser);
+    TafParsingService parsingService = new TafParsingServiceImpl(parser, idGenerationPolicy);
     String icao = "RKSI";
     String reportText = """
       TAF RKSI 082300Z 0900/1006 09010KT 4000 -RA FEW010 BKN030 OVC070
@@ -55,7 +57,7 @@ public class TafParsingServiceTests {
 
   @Test
   void TAF파싱에_성공하면_예보_발행시각과_유효시간을_알_수_있다() {
-    TafParsingService parsingService = new TafParsingServiceImpl(parser);
+    TafParsingService parsingService = new TafParsingServiceImpl(parser, idGenerationPolicy);
     String icao = "RKSI";
     String reportText = """
       TAF RKSI 082300Z 0900/1006 09010KT 4000 -RA FEW010 BKN030 OVC070
@@ -78,7 +80,7 @@ public class TafParsingServiceTests {
 
   @Test
   void TAF파싱에_실패하면_파싱상태는_false이고_파싱실패_원인을_알_수_있다() {
-    TafParsingService parsingService = new TafParsingServiceImpl(parser);
+    TafParsingService parsingService = new TafParsingServiceImpl(parser, idGenerationPolicy);
     String icao = "RKSI";
     String reportText = """
       TAF RKSI 082300Z 09010KT 4000 -RA FEW010 BKN030 OVC070 TX12/0908Z TN09/0921Z TX12/1005Z
@@ -88,6 +90,7 @@ public class TafParsingServiceTests {
 
     TafParsingResult result = parsingService.parse(icao, reportText, referenceTime);
     assertEquals(TafParsingStatus.FAILED, result.status());
+    assertEquals("generated-id", result.tafId());
     assertNotNull(result.failureReason());
   }
 
