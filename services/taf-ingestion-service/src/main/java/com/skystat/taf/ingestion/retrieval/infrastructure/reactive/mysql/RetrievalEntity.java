@@ -19,7 +19,7 @@ import java.time.Instant;
 @Accessors(fluent = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Table("retrievals")
+@Table("retrieval")
 public class RetrievalEntity {
 
   @Id

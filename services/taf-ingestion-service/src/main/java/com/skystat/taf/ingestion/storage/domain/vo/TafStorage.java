@@ -1,13 +1,11 @@
 package com.skystat.taf.ingestion.storage.domain.vo;
 
-import com.skystat.core.domain.entity.Taf;
-
 import java.time.Instant;
 
 import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.requireNonBlank;
 import static com.skystat.taf.ingestion.common.validation.DomainFieldValidator.requireNonNull;
 
-public record StoredTaf(
+public record TafStorage(
   String tafId,
   String sourceId,
   String icao,
@@ -17,7 +15,7 @@ public record StoredTaf(
   String failureReason
 ) {
 
-  public StoredTaf {
+  public TafStorage {
     tafId = requireNonBlank(tafId, "tafId");
     sourceId = requireNonBlank(sourceId, "sourceId");
     icao = requireNonBlank(icao, "icao");

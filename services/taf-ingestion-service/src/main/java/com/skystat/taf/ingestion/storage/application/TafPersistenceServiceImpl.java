@@ -2,15 +2,12 @@ package com.skystat.taf.ingestion.storage.application;
 
 import com.skystat.taf.ingestion.common.exception.IngestionErrorCode;
 import com.skystat.taf.ingestion.common.exception.IngestionException;
-import com.skystat.taf.ingestion.retrieval.domain.Retrieval;
 import com.skystat.taf.ingestion.storage.application.port.TafPersistenceServicePort;
 import com.skystat.taf.ingestion.storage.application.service.TafPersistenceService;
-import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
+import com.skystat.taf.ingestion.storage.domain.vo.TafStorage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +23,7 @@ public class TafPersistenceServiceImpl implements TafPersistenceService {
 
   @Override
   @Transactional
-  public StoredTaf insert(StoredTaf taf) {
+  public TafStorage insert(TafStorage taf) {
     if (existsByTafId(taf.tafId())) {
       throw new IngestionException(IngestionErrorCode.DUPLICATE_RESOURCE, duplicateMessage(taf));
     }
@@ -34,11 +31,11 @@ public class TafPersistenceServiceImpl implements TafPersistenceService {
     return tafPersistencePort.insert(taf);
   }
 
-  private static String duplicateMessage(StoredTaf taf) {
+  private static String duplicateMessage(TafStorage taf) {
     return "Taf already exists. tafId=" + taf.tafId() + ", icao=" + taf.icao();
   }
 
-  private static String notFoundMessage(StoredTaf taf) {
+  private static String notFoundMessage(TafStorage taf) {
     return "Taf not found. tafId=" + taf.tafId() + ", icao=" + taf.icao();
   }
 

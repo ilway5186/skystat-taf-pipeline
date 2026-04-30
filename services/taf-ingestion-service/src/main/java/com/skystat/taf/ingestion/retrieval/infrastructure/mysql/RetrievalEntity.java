@@ -18,10 +18,10 @@ import java.time.Instant;
 @Getter
 @Accessors(fluent = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "retrievals")
+@Table(name = "retrieval")
 public class RetrievalEntity {
 
   @Id

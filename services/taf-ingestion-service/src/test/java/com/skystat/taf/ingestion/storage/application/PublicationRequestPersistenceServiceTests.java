@@ -48,9 +48,8 @@ public class PublicationRequestPersistenceServiceTests {
   void 새로운_발행요청을_insert할_수_있다() {
     PublicationRequest request = PublicationRequest.pending(
       "4",
-      "taf-4",
-      Instant.parse("2026-04-23T07:01:00Z")
-    );
+      "taf-4", "RKSI",
+      Instant.parse("2026-04-23T07:01:00Z"));
 
     PublicationRequest savedRequest = service.insert(request);
 
@@ -62,9 +61,8 @@ public class PublicationRequestPersistenceServiceTests {
   void 중복된_requestId로_insert를_시도하면_예외가_발생한다() {
     PublicationRequest request = PublicationRequest.pending(
       "1",
-      "taf-1",
-      Instant.parse("2026-04-23T07:01:00Z")
-    );
+      "taf-1", "RKSI",
+      Instant.parse("2026-04-23T07:01:00Z"));
 
     IngestionException exception = assertThrows(IngestionException.class, () -> service.insert(request));
 
@@ -75,14 +73,12 @@ public class PublicationRequestPersistenceServiceTests {
   void 여러_발행요청을_insertAll할_수_있다() {
     PublicationRequest request4 = PublicationRequest.pending(
       "4",
-      "taf-4",
-      Instant.parse("2026-04-23T07:01:00Z")
-    );
+      "taf-4", "RKSI",
+      Instant.parse("2026-04-23T07:01:00Z"));
     PublicationRequest request5 = PublicationRequest.pending(
       "5",
-      "taf-5",
-      Instant.parse("2026-04-23T07:01:03Z")
-    );
+      "taf-5", "RKSI",
+      Instant.parse("2026-04-23T07:01:03Z"));
 
     List<PublicationRequest> savedRequests = service.insertAll(List.of(request4, request5));
 
@@ -94,14 +90,12 @@ public class PublicationRequestPersistenceServiceTests {
   void insertAll_대상중_이미_존재하는_requestId가_있으면_예외가_발생한다() {
     PublicationRequest request1 = PublicationRequest.pending(
       "1",
-      "taf-1",
-      Instant.parse("2026-04-23T07:01:00Z")
-    );
+      "taf-1", "RKSI",
+      Instant.parse("2026-04-23T07:01:00Z"));
     PublicationRequest request4 = PublicationRequest.pending(
       "4",
-      "taf-4",
-      Instant.parse("2026-04-23T07:01:03Z")
-    );
+      "taf-4", "RKSI",
+      Instant.parse("2026-04-23T07:01:03Z"));
 
     IngestionException exception = assertThrows(
       IngestionException.class,
@@ -178,9 +172,9 @@ public class PublicationRequestPersistenceServiceTests {
     private final List<PublicationRequest> requests = new ArrayList<>();
 
     FakePublicationRequestPersistencePort() {
-      PublicationRequest request1 = PublicationRequest.pending("1", "taf-1", Instant.parse("2026-04-23T07:00:00Z"));
-      PublicationRequest request2 = PublicationRequest.pending("2", "taf-2", Instant.parse("2026-04-23T07:00:03Z"));
-      PublicationRequest request3 = PublicationRequest.pending("3", "taf-3", Instant.parse("2026-04-23T07:00:05Z"));
+      PublicationRequest request1 = PublicationRequest.pending("1", "taf-1", "RKSI", Instant.parse("2026-04-23T07:00:00Z"));
+      PublicationRequest request2 = PublicationRequest.pending("2", "taf-2", "RKSI", Instant.parse("2026-04-23T07:00:03Z"));
+      PublicationRequest request3 = PublicationRequest.pending("3", "taf-3", "RKSI", Instant.parse("2026-04-23T07:00:05Z"));
 
       request2.markSent(Instant.parse("2026-04-23T07:00:07Z"));
       request3.markFailed("Internal Error", Instant.parse("2026-04-23T07:00:08Z"));
@@ -196,12 +190,12 @@ public class PublicationRequestPersistenceServiceTests {
     }
 
     @Override
-    public boolean existsAnyByRequestId(List<String> requestIds) {
+    public boolean existsAnyByRequestIds(List<String> requestIds) {
       return requests.stream().anyMatch(request -> requestIds.contains(request.requestId()));
     }
 
     @Override
-    public boolean existsAllByRequestId(List<String> requestIds) {
+    public boolean existsAllByRequestIds(List<String> requestIds) {
       return requestIds.stream().allMatch(this::existsByRequestId);
     }
 
@@ -229,11 +223,6 @@ public class PublicationRequestPersistenceServiceTests {
     public List<PublicationRequest> insertAll(List<PublicationRequest> requests) {
       this.requests.addAll(requests);
       return List.copyOf(requests);
-    }
-
-    @Override
-    public List<PublicationRequest> updateAll(List<PublicationRequest> requests) {
-      return requests.stream().map(this::update).toList();
     }
 
     @Override

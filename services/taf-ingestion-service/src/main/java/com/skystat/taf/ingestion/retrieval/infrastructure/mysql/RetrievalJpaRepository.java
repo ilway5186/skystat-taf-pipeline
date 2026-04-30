@@ -14,5 +14,4 @@ public interface RetrievalJpaRepository extends JpaRepository<RetrievalEntity, L
   List<RetrievalEntity> findAllByGroupIdOrderByAttemptCountAsc(String groupId);
 
 
-
 }

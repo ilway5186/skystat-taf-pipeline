@@ -1,15 +1,11 @@
 package com.skystat.taf.ingestion.storage.application.service;
 
-import com.skystat.core.domain.entity.Taf;
-import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
-
-import java.time.Instant;
-import java.util.Optional;
+import com.skystat.taf.ingestion.storage.domain.vo.TafStorage;
 
 public interface TafPersistenceService {
 
   boolean existsByTafId(String tafId);
 
-  StoredTaf insert(StoredTaf storedTaf);
+  TafStorage insert(TafStorage tafStorage);
 
 }

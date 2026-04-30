@@ -27,7 +27,7 @@ public class RetrievalJdbcRepository {
     String placeHolders = pairs.stream().map(p -> "(?, ?)").collect(Collectors.joining(", "));
     String sql = """
       SELECT EXISTS (
-        SELECT 1 FROM retrievals r WHERE (r.group_id, r.attempt_count) IN (%s)
+        SELECT 1 FROM retrieval r WHERE (r.group_id, r.attempt_count) IN (%s)
       )
       """.formatted(placeHolders);
 
@@ -49,7 +49,7 @@ public class RetrievalJdbcRepository {
     String placeHolders = pairs.stream().map(p -> "(?, ?)").collect(Collectors.joining(", "));
     String sql = """
       SELECT COUNT(DISTINCT r.group_id, r.attempt_count)
-      FROM retrievals r
+      FROM retrieval r
       WHERE (r.group_id, r.attempt_count) IN (%s)
       """.formatted(placeHolders);
 
@@ -71,7 +71,7 @@ public class RetrievalJdbcRepository {
     String placeHolders = pairs.stream().map(p -> "(?, ?)").collect(Collectors.joining(", "));
     String sql = """
       SELECT r.id, r.group_id, r.attempt_count
-      FROM retrievals r
+      FROM retrieval r
       WHERE (r.group_id, r.attempt_count) IN (%s)
       """.formatted(placeHolders);
 

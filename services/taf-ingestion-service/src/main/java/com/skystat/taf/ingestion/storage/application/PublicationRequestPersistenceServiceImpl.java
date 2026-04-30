@@ -28,13 +28,13 @@ public class PublicationRequestPersistenceServiceImpl implements PublicationRequ
   @Override
   @Transactional(readOnly = true)
   public boolean existsAnyByRequestId(List<String> requestIds) {
-    return persistencePort.existsAnyByRequestId(requestIds);
+    return persistencePort.existsAnyByRequestIds(requestIds);
   }
 
   @Override
   @Transactional(readOnly = true)
   public boolean existsAllByRequestId(List<String> requestIds) {
-    return persistencePort.existsAllByRequestId(requestIds);
+    return persistencePort.existsAllByRequestIds(requestIds);
   }
 
   @Override

@@ -20,6 +20,7 @@ public class PublicationRequest {
 
   private String requestId;
   private String tafId;
+  private String icao;
   private PublicationRequestStatus status;
   private Instant requestedAt;
   private Instant publishedAt;
@@ -27,10 +28,11 @@ public class PublicationRequest {
   private String failureReason;
   private int retryCount;
 
-  public static PublicationRequest pending(String requestId, String tafId, Instant requestedAt) {
+  public static PublicationRequest pending(String requestId, String tafId, String icao, Instant requestedAt) {
     return new PublicationRequest(
       requireNonBlank(requestId, "requestId"),
       requireNonBlank(tafId, "tafId"),
+      requireNonBlank(icao, "icao"),
       PublicationRequestStatus.PENDING,
       requireNonNull(requestedAt, "requestedAt"),
       null,

@@ -1,6 +1,6 @@
 package com.skystat.taf.ingestion.storage.application.port;
 
-import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
+import com.skystat.taf.ingestion.storage.domain.vo.TafStorage;
 
 import java.util.Optional;
 
@@ -8,8 +8,8 @@ public interface TafPersistenceServicePort {
 
   boolean existsByTafId(String tafId);
 
-  StoredTaf insert(StoredTaf taf);
+  TafStorage insert(TafStorage tafStorage);
 
-  Optional<StoredTaf> findByTafId(String tafId);
+  Optional<TafStorage> findByTafId(String tafId);
 
 }

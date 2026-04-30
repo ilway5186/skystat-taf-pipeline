@@ -16,7 +16,7 @@ public class PublicationRequestTests {
     String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
-    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
+    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, "RKSI", requestedAt);
 
     assertEquals(id, publicationRequest.requestId());
     assertEquals(tafId, publicationRequest.tafId());
@@ -30,7 +30,7 @@ public class PublicationRequestTests {
     String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
-    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
+    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, "RKSI", requestedAt);
 
     Instant publishedAt = Instant.now();
     publicationRequest.markSent(publishedAt);
@@ -46,7 +46,7 @@ public class PublicationRequestTests {
     String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
-    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
+    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, "RKSI", requestedAt);
 
     String failureReason = "failureReason";
     Instant failedAt = Instant.now();
@@ -63,7 +63,7 @@ public class PublicationRequestTests {
     String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
-    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
+    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, "RKSI", requestedAt);
 
     String failureReason = "failureReason";
     Instant failedAt = Instant.now();
@@ -84,7 +84,7 @@ public class PublicationRequestTests {
     String tafId = "taf-id";
     Instant requestedAt = Instant.now();
 
-    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, requestedAt);
+    PublicationRequest publicationRequest = PublicationRequest.pending(id, tafId, "RKSI", requestedAt);
 
     String failureReason = "failureReason";
     Instant failedAt = Instant.now();

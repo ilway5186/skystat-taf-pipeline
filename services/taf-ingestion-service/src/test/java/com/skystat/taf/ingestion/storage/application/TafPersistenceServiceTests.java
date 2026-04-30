@@ -4,7 +4,7 @@ import com.skystat.taf.ingestion.common.exception.IngestionErrorCode;
 import com.skystat.taf.ingestion.common.exception.IngestionException;
 import com.skystat.taf.ingestion.storage.application.port.TafPersistenceServicePort;
 import com.skystat.taf.ingestion.storage.application.service.TafPersistenceService;
-import com.skystat.taf.ingestion.storage.domain.vo.StoredTaf;
+import com.skystat.taf.ingestion.storage.domain.vo.TafStorage;
 import com.skystat.taf.ingestion.storage.domain.vo.TafParsingStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class TafPersistenceServiceTests {
   @Test
   void 동일한_tafId로_StoredTaf를_insert하면_예외가_발생한다() {
     TafPersistenceService fakeService = new TafPersistenceServiceImpl(new FakeTafPersistenceServicePort());
-    StoredTaf alreadyExists = new StoredTaf(
+    TafStorage alreadyExists = new TafStorage(
       "abcd1234",
       "awc",
       "rksi",
@@ -51,7 +51,7 @@ public class TafPersistenceServiceTests {
   @Test
   void 중복되지_않는_tafId의_StoredTaf는_insert에_성공해야_한다() {
     TafPersistenceService fakeService = new TafPersistenceServiceImpl(new FakeTafPersistenceServicePort());
-    StoredTaf newOne = new StoredTaf(
+    TafStorage newOne = new TafStorage(
       "abcd12345",
       "awc",
       "rksi",
@@ -61,7 +61,7 @@ public class TafPersistenceServiceTests {
       null
     );
 
-    StoredTaf inserted = fakeService.insert(newOne);
+    TafStorage inserted = fakeService.insert(newOne);
     assertEquals(newOne.tafId(), inserted.tafId());
     assertEquals(newOne.report(), inserted.report());
   }
@@ -69,10 +69,10 @@ public class TafPersistenceServiceTests {
 
   static class FakeTafPersistenceServicePort implements TafPersistenceServicePort {
 
-    List<StoredTaf> list = new ArrayList<>();
+    List<TafStorage> list = new ArrayList<>();
 
     public FakeTafPersistenceServicePort() {
-      list.add(new StoredTaf(
+      list.add(new TafStorage(
         "abcd1234",
         "awc",
         "rksi",
@@ -89,17 +89,17 @@ public class TafPersistenceServiceTests {
     }
 
     @Override
-    public StoredTaf insert(StoredTaf storedTaf) {
-      if (existsByTafId(storedTaf.tafId())) {
+    public TafStorage insert(TafStorage tafStorage) {
+      if (existsByTafId(tafStorage.tafId())) {
         throw new IngestionException(IngestionErrorCode.DUPLICATE_RESOURCE);
       }
-      list.add(storedTaf);
-      return storedTaf;
+      list.add(tafStorage);
+      return tafStorage;
     }
 
 
     @Override
-    public Optional<StoredTaf> findByTafId(String tafId) {
+    public Optional<TafStorage> findByTafId(String tafId) {
       if (!existsByTafId(tafId)) return Optional.empty();
 
       return list.stream().filter(t -> t.tafId().equals(tafId)).findFirst();
